@@ -1,0 +1,8 @@
+/**
+ * Copyright (C) 2018 thinh ho
+ * This file is part of 'sample-sso' which is released under the MIT license.
+ * See LICENSE at the project root directory.
+ */
+
+
+description = 'Secure Remote Password (SRP) Math Calculations (sample)'

@@ -1,0 +1,32 @@
+/**
+ * Copyright (C) 2018 thinh ho
+ * This file is part of 'sample-sso' which is released under the MIT license.
+ * See LICENSE at the project root directory.
+ */
+
+description = 'Webapp: Juliet'
+
+apply plugin: 'application'
+
+mainClassName = "kkdt.sample.sso.juliet.JulietApplication"
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web:1.5.10.RELEASE")
+}
+
+/*
+Automatic static web resources discovery at
+
+/META-INF/resources/
+/resources/
+/static/
+/public/
+*/
+
+distTar {
+    destinationDir = rootProject.buildDir
+}
+
+distZip {
+    destinationDir = rootProject.buildDir
+}

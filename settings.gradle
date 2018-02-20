@@ -1,0 +1,13 @@
+/**
+ * Copyright (C) 2018 thinh ho
+ * This file is part of 'sample-sso' which is released under the MIT license.
+ * See LICENSE at the project root directory.
+ */
+
+ 
+rootProject.name = 'sample-sso'
+
+include 'srpmath'
+include 'romeo'
+include 'juliet'
+include 'core'

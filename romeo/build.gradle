@@ -1,0 +1,42 @@
+/**
+ * Copyright (C) 2018 thinh ho
+ * This file is part of 'sample-sso' which is released under the MIT license.
+ * See LICENSE at the project root directory.
+ */
+
+description = 'Webapp: Romeo'
+
+apply plugin: 'application'
+
+mainClassName = "kkdt.sample.sso.romeo.RomeoApplication"
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web:1.5.10.RELEASE")
+}
+
+/*
+Automatic static web resources discovery at
+
+/META-INF/resources/
+/resources/
+/static/
+/public/
+*/
+
+//applicationDistribution.from("${rootProject.projectDir}/certs") {
+//    include "*.p12"
+//}
+
+processResources {
+    from("${rootProject.projectDir}/certs") {
+        include 'server.p12'
+    }
+}
+
+distTar {
+    destinationDir = rootProject.buildDir
+}
+
+distZip {
+    destinationDir = rootProject.buildDir
+}
