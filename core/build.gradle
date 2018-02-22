@@ -9,5 +9,7 @@ description = 'sample-sso: core'
 apply plugin: 'java-library'
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-security:1.5.10.RELEASE")
+    compile("org.springframework.boot:spring-boot-starter-security:1.5.10.RELEASE") {
+        exclude module : 'spring-boot-starter-logging'
+    }
 }

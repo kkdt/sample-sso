@@ -5,4 +5,8 @@
  */
 
 
-description = 'Secure Remote Password (SRP) Math Calculations (sample)'
+description = 'tools'
+
+dependencies {
+    compile project(':core')
+}

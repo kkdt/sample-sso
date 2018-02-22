@@ -11,7 +11,9 @@ apply plugin: 'application'
 mainClassName = "kkdt.sample.sso.romeo.RomeoApplication"
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-web:1.5.10.RELEASE")
+    compile("org.springframework.boot:spring-boot-starter-web:1.5.10.RELEASE") {
+        exclude module : 'spring-boot-starter-logging'
+    }
 }
 
 /*
@@ -31,12 +33,4 @@ processResources {
     from("${rootProject.projectDir}/certs") {
         include 'server.p12'
     }
-}
-
-distTar {
-    destinationDir = rootProject.buildDir
-}
-
-distZip {
-    destinationDir = rootProject.buildDir
 }

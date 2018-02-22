@@ -4,23 +4,16 @@
  * See LICENSE at the project root directory.
  */
 
-description = 'Webapp: Juliet'
+description = 'Authentication server (RMI interface)'
 
 apply plugin: 'application'
 
-mainClassName = "kkdt.sample.sso.juliet.JulietApplication"
+mainClassName = "kkdt.sample.sso.authserver.AuthenticationServerApplication"
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-web:1.5.10.RELEASE") {
+    compile project(':core')
+    
+    compile('org.springframework.boot:spring-boot-starter:1.5.10.RELEASE') {
         exclude module : 'spring-boot-starter-logging'
     }
 }
-
-/*
-Automatic static web resources discovery at
-
-/META-INF/resources/
-/resources/
-/static/
-/public/
-*/

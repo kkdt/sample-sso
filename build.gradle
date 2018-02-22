@@ -52,11 +52,30 @@ subprojects {
    apply plugin: 'maven'
    
    dependencies {
+       compile 'log4j:log4j:1.2.17'
        testCompile 'junit:junit:4.12'
+   }
+   
+   afterEvaluate { p ->
+       if(p.plugins.hasPlugin('application')) {
+           p.distTar {
+               destinationDir = rootProject.buildDir
+           }
+           
+           p.distZip {
+               destinationDir = rootProject.buildDir
+           }
+       }
+       
+       p.processResources {
+           from(rootProject.projectDir) {
+               include 'log4j.xml'
+           }
+       }
    }
 }
 
-allprojects { project ->
+allprojects {
    version = rootProject.version
    
    repositories {
