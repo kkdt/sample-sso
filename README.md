@@ -1,8 +1,17 @@
-# sample-sso
+# Overview
 
-(Not complete)
+## Modules
 
-## Quick Start
+1. core - Shared model/api
+2. authServer - Authentication server application
+3. console (TBD)
+4. romeo - Web application backed by Spring Security and https
+5. juliet - Web application (no Spring Security or https)
+6. tools - Test tools
+
+# Quick Start
+
+Whenever a username and password is asked, the only valid user is `admin` regardless of the password.
 
 1. Navigate into `certs`
 2. Create SSL certs: `makecert`

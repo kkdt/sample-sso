@@ -12,4 +12,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-security:1.5.10.RELEASE") {
         exclude module : 'spring-boot-starter-logging'
     }
+    compile("org.springframework.boot:spring-boot-starter-web:1.5.10.RELEASE") {
+        exclude module : 'spring-boot-starter-logging'
+    }
 }
