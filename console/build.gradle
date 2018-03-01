@@ -1,0 +1,16 @@
+/**
+ * Copyright (C) 2018 thinh ho
+ * This file is part of 'sample-sso' which is released under the MIT license.
+ * See LICENSE at the project root directory.
+ */
+
+description = 'Console (thick client)'
+
+apply plugin: 'application'
+
+mainClassName = "kkdt.sample.sso.console.Console"
+applicationDefaultJvmArgs = ["-Xdebug","-Xrunjdwp:server=y,transport=dt_socket,address=4001,suspend=n"]
+
+dependencies {
+    compile project(':core')
+}

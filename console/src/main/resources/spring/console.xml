@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans 
+    xmlns="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:beans="http://www.springframework.org/schema/beans"
+    xsi:schemaLocation="
+    http://www.springframework.org/schema/security 
+    http://www.springframework.org/schema/security/spring-security-4.2.xsd
+    http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
+
+    <beans:bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <beans:property name="location">
+            <beans:value>classpath:application.properties</beans:value>
+        </beans:property>
+    </beans:bean>
+    
+    <beans:bean id="authenticationService"
+        class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+        <beans:property name="serviceUrl" value="${AuthenticationService.rmi}" />
+        <beans:property name="serviceInterface" value="kkdt.sample.sso.core.AuthenticationService" />
+    </beans:bean>
+    
+    <beans:bean id="authenticationProvider"
+        class="kkdt.sample.sso.core.security.AuthInfoProvider">
+        <beans:constructor-arg ref="authenticationService" />
+    </beans:bean>
+
+    <beans:bean class="org.springframework.security.authentication.DefaultAuthenticationEventPublisher"/>
+    
+    <authentication-manager id="authenticationManager">
+        <authentication-provider ref="authenticationProvider" />
+        <!--
+        (more if needed)
+        <authentication-provider ref=""/> 
+        <authentication-provider ref=""/> 
+        -->
+    </authentication-manager>
+    
+    <beans:bean id="globalAuthenticationManager" class="kkdt.sample.sso.console.GlobalSecurityContextAuthenticationManager">
+        <beans:constructor-arg ref="authenticationManager" />
+    </beans:bean>
+    
+    <beans:bean id="consoleController" class="kkdt.sample.sso.console.ConsoleController">
+        <beans:constructor-arg ref="globalAuthenticationManager" />
+    </beans:bean>
+    
+</beans:beans>
