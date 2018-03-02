@@ -42,6 +42,7 @@ public class SecuredConfiguration extends WebSecurityConfigurerAdapter {
     
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        // https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#csrf
         http.authorizeRequests()
             .anyRequest().authenticated()
             .and().formLogin()

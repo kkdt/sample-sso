@@ -17,7 +17,7 @@ The primary focus of the project is to implement and address the security concer
 
 # Quick Start
 
-Whenever a username and password is asked, the only valid user is `admin`; any password. Each application's run scripts are bundled in their respective tarball located at `<app>/bin` when extracted.
+Whenever a username and password is asked, the only valid user is `admin`; any password. Each application's run script is bundled in their respective tarball located at `<app>/bin` when extracted.
 
 1. Navigate into `certs`
 2. Create SSL certs: `makecert`
