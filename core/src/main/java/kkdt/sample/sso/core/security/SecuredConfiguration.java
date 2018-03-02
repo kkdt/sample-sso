@@ -6,19 +6,21 @@
 package kkdt.sample.sso.core.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import kkdt.sample.sso.core.AuthenticationService;
 import kkdt.sample.sso.core.AuthenticationServiceLocator;
 
 /**
  * Configuration class that can be shared for any application that wants to hook
- * up Spring Security.
+ * up Spring Security. Defaults to built-in login form and logout functionality.
  * 
  * @author thinh ho
  *
@@ -26,6 +28,9 @@ import kkdt.sample.sso.core.AuthenticationServiceLocator;
 @Configuration
 @Import(value=AuthenticationServiceLocator.class)
 public class SecuredConfiguration extends WebSecurityConfigurerAdapter {
+    
+    @Value("${server.context-path}")
+    private String contextPath;
     
     @Autowired
     private AuthenticationService authenticationService;
@@ -39,7 +44,10 @@ public class SecuredConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
             .anyRequest().authenticated()
-        .and()
-            .formLogin();
+            .and().formLogin()
+            .and().logout()
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .invalidateHttpSession(true)
+                .logoutSuccessUrl(contextPath);
     }
 }
