@@ -9,10 +9,29 @@ description = 'sample-sso: core'
 apply plugin: 'java-library'
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-security:1.5.10.RELEASE") {
+    compile("org.springframework.boot:spring-boot-starter-security:2.0.5.RELEASE") {
         exclude module : 'spring-boot-starter-logging'
     }
-    compile("org.springframework.boot:spring-boot-starter-web:1.5.10.RELEASE") {
+    
+    compile("org.springframework.boot:spring-boot-starter-web:2.0.5.RELEASE") {
         exclude module : 'spring-boot-starter-logging'
+    }
+    
+    compile 'org.springframework.security:spring-security-jwt:1.0.9.RELEASE'
+    compile 'org.springframework.security:spring-security-oauth2-client:5.1.0.RELEASE'
+    compile 'org.springframework.security:spring-security-oauth2-jose:5.1.0.RELEASE'
+    
+    compile 'org.springframework.security.oauth:spring-security-oauth2:2.0.3.RELEASE'
+    
+//    compile 'com.auth0:java-jwt:3.4.0'
+}
+
+// the public certificates will be packaged for all modules
+// the server keystore will be packaged as well but this is just for convenience
+processResources {
+    from("${rootProject.projectDir}/certs") {
+        include 'ca.crt'
+        include 'server.crt'
+        include 'server.p12'
     }
 }

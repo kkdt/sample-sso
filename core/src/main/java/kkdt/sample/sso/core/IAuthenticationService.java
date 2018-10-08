@@ -5,15 +5,13 @@
  */
 package kkdt.sample.sso.core;
 
-public interface AuthenticationService {
-    /**
-     * Determine if the user is a registered user.
-     * 
-     * @param userId
-     * @return
-     */
-    boolean validUser(String userId);
-    
+/**
+ * Authentication service API for username/password.
+ * 
+ * @author thinh ho
+ *
+ */
+public interface IAuthenticationService {
     /**
      * Authenticate the user credentials.
      * 
@@ -21,5 +19,5 @@ public interface AuthenticationService {
      * @param password
      * @return
      */
-    AuthInfo authenticate(String userId, char[] password);
+    AuthenticationInfo authenticate(String userId, char[] password);
 }

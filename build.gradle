@@ -72,6 +72,11 @@ subprojects {
                include 'log4j.xml'
            }
        }
+       
+       // to support unit test in IDE
+       p.sourceSets.test {
+           resources.srcDirs = ["${rootProject.projectDir}/certs"]
+       }
    }
 }
 

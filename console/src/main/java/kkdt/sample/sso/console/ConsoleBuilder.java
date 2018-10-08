@@ -91,9 +91,7 @@ public class ConsoleBuilder {
                     frame.pack();
                 });
             });
-            consoleController.authenticationListener(event -> {
-                
-            });
+            
             // additional logging callback
             consoleController.authenticationListener(event -> {
                 SecurityContext context = SecurityContextHolder.getContext();

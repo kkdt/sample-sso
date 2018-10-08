@@ -13,7 +13,7 @@ mainClassName = "kkdt.sample.sso.authserver.AuthenticationServerApplication"
 dependencies {
     compile project(':core')
     
-    compile('org.springframework.boot:spring-boot-starter:1.5.10.RELEASE') {
+    compile('org.springframework.boot:spring-boot-starter:2.0.5.RELEASE') {
         exclude module : 'spring-boot-starter-logging'
     }
 }

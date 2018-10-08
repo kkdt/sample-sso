@@ -7,6 +7,13 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+if [ ! -f ${DIR}/certs.env ]; then
+    echo "Error: Missing some functions"
+    exit 1
+fi
+
+source ${DIR}/certs.env
+
 which keytool &>/dev/null
 [ $? -eq 0 ] || { echo "keytool command not found."; exit 1; }
 
@@ -16,41 +23,34 @@ which keytool &>/dev/null
 #    keytool -alias e1 -certreq | keytool -alias ca2 -gencert > e1.cert
 # CN=cName, OU=orgUnit, O=org, L=city, S=state, C=countryCode
 
-
 server=$(hostname)
 serverAlias=server
 cap12=${DIR}/ca.p12
-cacert=${DIR}/ca.cer
+cacert=${DIR}/ca.crt
 serverp12=${DIR}/server.p12
 servercsr=${DIR}/${server}.csr
-servercer=${DIR}/${server}.cer
+servercer=${DIR}/server.crt
 storepass=changeit
-caAlias=kkdtCA
+caAlias=ca
 
 # remove any existing artifacts
 rm -f ${cap12}
 rm -f ${cacert}
 rm -f ${serverp12}
-rm -f ${servercsr}
 rm -f ${serverjks}
 
 echo "Generating CA: ${cap12}"
-keytool -genkeypair -alias ${caAlias} -storetype PKCS12 -keyalg RSA -keysize 2048 \
-    -keystore ${cap12} -validity 365 \
-    -dname "CN=kkdt.github.com,OU=kkdt,O=kkdt,L=Fairfax,S=VA,C=US" \
-    -storepass ${storepass}
+generateCA ${caAlias} ${storepass}
 
 echo "CA X509 certificate: ${cacert}"
-keytool -export -alias ${caAlias} -keystore ${cap12} -rfc --storepass changeit -file ${cacert}
+exportX509Certificate ${cap12} ${caAlias} ${storepass}
 
 echo "Generating server: ${serverp12}"
-keytool -genkeypair -alias ${serverAlias} -storetype PKCS12 -keyalg RSA -keysize 2048 \
-    -keystore ${serverp12} -validity 3650 \
-    -dname "CN=${server},OU=kkdt,O=kkdt,L=Fairfax,S=VA,C=US" \
-    -storepass ${storepass}
+generateKeystore ${server} ${storepass} ${serverAlias}
+mv ${server}.p12 ${serverp12}
 
 echo "Create csr: ${servercsr}"
-keytool -certreq -alias ${serverAlias} -keystore ${serverp12} -file ${servercsr} --storepass changeit \
+keytool -certreq -alias ${serverAlias} -keystore ${serverp12} -file ${servercsr} --storepass ${storepass} \
     -ext "san=dns:${server},dns:localhost,ip:127.0.0.1" \
     -storetype PKCS12
 
@@ -72,8 +72,11 @@ echo "Creating server keystore: ${serverjks}"
 keytool -import -trustcacerts -alias ${caAlias} -keystore ${serverp12} \
     -storetype PKCS12 -storepass ${storepass} \
     -file  ${cacert} -noprompt
+    
 keytool -import -trustcacerts -alias ${serverAlias} -keystore ${serverp12} \
     -storetype PKCS12 -storepass ${storepass} \
     -file  ${servercer} 
 
+# cleaning up
+rm -f ${servercsr}
 

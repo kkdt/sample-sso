@@ -16,6 +16,8 @@ import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
 
+import kkdt.sample.sso.core.security.jwt.ClasspathResourceJWSVerifier;
+
 /**
  * Application controller that can be attached to the following actions:
  * <ol>
@@ -98,6 +100,16 @@ public class ConsoleController
     public void onApplicationEvent(AbstractAuthenticationEvent event) {
         if(event.getAuthentication() != null && event.getAuthentication().isAuthenticated()) {
             doFeedback("Successful login: " + event.getAuthentication());
+            doFeedback("id_token: " + event.getAuthentication().getCredentials());
+            
+            // do verification
+            try {
+                boolean valid = new ClasspathResourceJWSVerifier("server.crt")
+                    .verifyJWS((String)event.getAuthentication().getCredentials());
+                doFeedback(String.format("JWS %s valid", valid ? "is" : "is NOT"));
+            } catch (Exception e) {
+                logger.error(e);
+            }
         }
         logger.info("Publishing authentication event: " + event);
         authenticationListeners.forEach(c -> c.accept(event));

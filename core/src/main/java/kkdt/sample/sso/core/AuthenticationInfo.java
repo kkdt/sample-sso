@@ -8,19 +8,44 @@ package kkdt.sample.sso.core;
 import java.io.Serializable;
 import java.util.UUID;
 
-public class AuthInfo implements Serializable {
+/**
+ * The authentication object returned by the authentication API.
+ * 
+ * @author thinh ho
+ *
+ */
+public class AuthenticationInfo implements Serializable {
     private static final long serialVersionUID = 6330519800236276221L;
     
     private String session;
     private String userId;
+    private String email;
+    private String idToken;
 
-    public AuthInfo() {
+    public AuthenticationInfo() {
         this.session = UUID.randomUUID().toString();
     }
     
-    public AuthInfo(String userId) {
+    public AuthenticationInfo(String userId) {
         this.session = UUID.randomUUID().toString();
         this.userId = userId;
+        this.email = String.format("%s@email.com", userId);
+    }
+
+    public String getIdToken() {
+        return idToken;
+    }
+
+    public void setIdToken(String idToken) {
+        this.idToken = idToken;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getUserId() {
@@ -41,6 +66,6 @@ public class AuthInfo implements Serializable {
 
     @Override
     public String toString() {
-        return "AuthInfo [session=" + session + ", userId=" + userId + "]";
+        return "AuthenticationInfo [session=" + session + ", userId=" + userId + ", email=" + email + "]";
     }
 }

@@ -18,17 +18,17 @@
     <beans:bean id="authenticationService"
         class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
         <beans:property name="serviceUrl" value="${AuthenticationService.rmi}" />
-        <beans:property name="serviceInterface" value="kkdt.sample.sso.core.AuthenticationService" />
+        <beans:property name="serviceInterface" value="kkdt.sample.sso.core.IAuthenticationService" />
     </beans:bean>
     
     <beans:bean id="authenticationProvider"
-        class="kkdt.sample.sso.core.security.AuthInfoProvider">
+        class="kkdt.sample.sso.core.security.AuthenticationInfoProvider">
         <beans:constructor-arg ref="authenticationService" />
     </beans:bean>
 
     <beans:bean class="org.springframework.security.authentication.DefaultAuthenticationEventPublisher"/>
     
-    <authentication-manager id="authenticationManager">
+    <authentication-manager id="authenticationManager" erase-credentials="false">
         <authentication-provider ref="authenticationProvider" />
         <!--
         (more if needed)

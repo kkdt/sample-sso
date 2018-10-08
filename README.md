@@ -30,3 +30,19 @@ Whenever a username and password is asked, the only valid user is `admin`; any p
 9. Browser: https://localhost:8991/romeo
 10. Browser: http://localhost:8992/juliet
 
+# issue a GET request to see the (empty) list of tasks
+curl http://localhost:8080/tasks
+
+# issue a POST request to create a new task
+curl -H "Content-Type: application/json" -X POST -d '{
+    "description": "Buy some milk(shake)"
+}'  http://localhost:8080/tasks
+
+# issue a PUT request to update the recently created task
+curl -H "Content-Type: application/json" -X PUT -d '{
+    "description": "Buy some milk"
+}'  http://localhost:8080/tasks/1
+
+# issue a DELETE request to remove the existing task
+curl -X DELETE http://localhost:8080/tasks/1
+

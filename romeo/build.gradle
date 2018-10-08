@@ -12,10 +12,6 @@ mainClassName = "kkdt.sample.sso.romeo.RomeoApplication"
 applicationDefaultJvmArgs = ["-Xdebug","-Xrunjdwp:server=y,transport=dt_socket,address=4000,suspend=n"]
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-web:1.5.10.RELEASE") {
-        exclude module : 'spring-boot-starter-logging'
-    }
-    
     compile project(':core')
 }
 
@@ -32,8 +28,8 @@ Automatic static web resources discovery at
 //    include "*.p12"
 //}
 
-processResources {
-    from("${rootProject.projectDir}/certs") {
-        include 'server.p12'
-    }
-}
+//processResources {
+//    from("${rootProject.projectDir}/certs") {
+//        include 'server.p12'
+//    }
+//}
