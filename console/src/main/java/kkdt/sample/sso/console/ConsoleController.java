@@ -5,8 +5,12 @@
  */
 package kkdt.sample.sso.console;
 
+import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Vector;
 import java.util.function.Consumer;
@@ -41,6 +45,7 @@ public class ConsoleController
     
     private final GlobalSecurityContextAuthenticationManager authenticationManager;
     private Supplier<String> userName;
+    private Supplier<String> url;
     private Consumer<String> feedback;
     private final Collection<Consumer<AbstractAuthenticationEvent>> authenticationListeners = new Vector<>();
     
@@ -56,6 +61,17 @@ public class ConsoleController
      */
     public ConsoleController userName(Supplier<String> userName) {
         this.userName = userName;
+        return this;
+    }
+    
+    /**
+     * Input for the URl field.
+     * 
+     * @param url
+     * @return
+     */
+    public ConsoleController url(Supplier<String> url) {
+        this.url = url;
         return this;
     }
     
@@ -89,6 +105,9 @@ public class ConsoleController
             break;
         case "Logout":
             doLogout();
+            break;
+        case "Launch":
+            doLaunch();
             break;
         case "Exit":
             System.exit(0);
@@ -142,6 +161,16 @@ public class ConsoleController
             authenticationManager.logout();
         } catch (Exception e) {
             doFeedback(e.getMessage());
+            logger.error(e);
+        }
+    }
+    
+    private void doLaunch() {
+        doFeedback("Launching " + url.get());
+        try {
+            Desktop.getDesktop().browse(new URI(url.get()));
+        } catch (IOException | URISyntaxException e) {
+            doFeedback("Cannot launch URL: " + e.getMessage());
             logger.error(e);
         }
     }

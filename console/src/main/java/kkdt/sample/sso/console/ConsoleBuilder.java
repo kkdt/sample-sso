@@ -50,14 +50,21 @@ public class ConsoleBuilder {
         
         final JButton exitBtn = new JButton("Exit");
         final JButton actionBtn = new JButton("Login");
+        final JButton launchBtn = new JButton("Launch");
         final JTextField name = new JTextField(15);
         final JTextArea textArea = new JTextArea(5, 20);
+        final JTextField url = new JTextField(35);
         
         JPanel inputs = new JPanel();
         inputs.add(new JLabel("Username: "));
         inputs.add(name);
         inputs.add(actionBtn);
         inputs.add(exitBtn);
+        
+        JPanel urlInputs = new JPanel();
+        urlInputs.add(new JLabel("URL"));
+        urlInputs.add(url);
+        urlInputs.add(launchBtn);
         
         JScrollPane scrollPane = new JScrollPane(textArea); 
         textArea.setEditable(false);
@@ -70,34 +77,37 @@ public class ConsoleBuilder {
         frame.getContentPane().setLayout(new BorderLayout());
         frame.getContentPane().add(inputs, BorderLayout.NORTH);
         frame.getContentPane().add(feedback, BorderLayout.CENTER);
+        frame.getContentPane().add(urlInputs, BorderLayout.SOUTH);
         frame.pack();
         
+        url.setText("https://localhost:8991/auth?id=");
+        
         if(consoleController != null) {
+            consoleController
+                // user input fields need to be registerd to controller
+                .userName(name::getText)
+                .url(url::getText) 
+                // feedback gets output to the text area
+                .feedback(s -> textArea.append(s + "\n")) 
+                // callback to let UI handle authentication events
+                .authenticationListener(event -> {
+                    boolean authenticated = event.getAuthentication().isAuthenticated();
+                    SwingUtilities.invokeLater(() -> {
+                        actionBtn.setText(authenticated ? "Logout" : "Login");
+                        name.setEnabled(!authenticated);
+                        frame.pack();
+                    });
+                })
+                // additional logging callback
+                .authenticationListener(event -> {
+                    SecurityContext context = SecurityContextHolder.getContext();
+                    logger.info("Event.authentication: " + event.getAuthentication());
+                    logger.info("SecurityContext.getAuthentication: " + context.getAuthentication());
+                });
+            
             exitBtn.addActionListener(consoleController);
             actionBtn.addActionListener(consoleController);
-            
-            // the user name is pulled from the text field 
-            consoleController.userName(name::getText);
-            
-            // feedback gets output to the text area
-            consoleController.feedback(s -> textArea.append(s + "\n"));
-            
-            // callback to let UI handle authentication events
-            consoleController.authenticationListener(event -> {
-                boolean authenticated = event.getAuthentication().isAuthenticated();
-                SwingUtilities.invokeLater(() -> {
-                    actionBtn.setText(authenticated ? "Logout" : "Login");
-                    name.setEnabled(!authenticated);
-                    frame.pack();
-                });
-            });
-            
-            // additional logging callback
-            consoleController.authenticationListener(event -> {
-                SecurityContext context = SecurityContextHolder.getContext();
-                logger.info("Event.authentication: " + event.getAuthentication());
-                logger.info("SecurityContext.getAuthentication: " + context.getAuthentication());
-            });
+            launchBtn.addActionListener(consoleController);
         }
         return frame;
     }

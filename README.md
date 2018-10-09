@@ -2,9 +2,7 @@
 
 Suppose there already exist some legacy application system where users interact with desktop/thick clients. The legacy client-service and service-service interfaces are established - all security concerns have been addressed. An internal authentication service facilitates users logging into client applications.
 
-The goal for this project is to explore single-sign-on where an existing desktop/thick client application (`console`) authenticate users but also provides some identity federation to web applications launched in the same session. An authenticated session is always initiated by the thick client application; however, web applications should provide the same authentication mechanism should the user directly access the webapp on a browser.
-
-The primary focus of the project is to implement and address the security concerns when an authenticated client application launches a browser to a web application.
+The goal for this project is to explore single-sign-on where an existing desktop/thick client application (`console`) authenticate users but also provides some identity federation to web applications. An authenticated session is always initiated by the thick client application; however, web applications should provide the same authentication mechanism should the user directly access the webapp on a browser.
 
 # Modules
 
@@ -27,22 +25,15 @@ Whenever a username and password is asked, the only valid user is `admin`; any p
 6. Start up `authServer`
 7. Start up `console`
 8. Start up both webapps
-9. Browser: https://localhost:8991/romeo
-10. Browser: http://localhost:8992/juliet
+9. Browser (to romeo): https://localhost:8991
+10. Browser (to juliet): http://localhost:8992
 
-# issue a GET request to see the (empty) list of tasks
-curl http://localhost:8080/tasks
+# Single Sign-On
 
-# issue a POST request to create a new task
-curl -H "Content-Type: application/json" -X POST -d '{
-    "description": "Buy some milk(shake)"
-}'  http://localhost:8080/tasks
+1. Log into the Console
+2. Obtain the id_token from the feedback area
+3. Launch the URL: `https://localhost:8991/auth?id=<token>` - Assure that you are authenticated to the private resource
 
-# issue a PUT request to update the recently created task
-curl -H "Content-Type: application/json" -X PUT -d '{
-    "description": "Buy some milk"
-}'  http://localhost:8080/tasks/1
+# TODO
 
-# issue a DELETE request to remove the existing task
-curl -X DELETE http://localhost:8080/tasks/1
-
+There is an additional endpoint at `romeo` to test authenticated REST calls - `https://localhost:8991/echo?message=message`
