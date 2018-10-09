@@ -1,6 +1,6 @@
 # Overview
 
-The goal for this project is to explore single-sign-on where an existing desktop/thick client application (`console`) authenticate users but also provides the identity to web applications to facility single sign-on. An authenticated session is always initiated by the thick client application; however, web applications should provide the same authentication mechanism should the user directly access the webapp on a browser.
+The goal for this project is to explore single-sign-on where an existing desktop/thick client application (`console`) authenticate users but also provides the identity to web applications to facilitate single sign-on. An authenticated session is initiated by the thick client application; however, web applications should provide the same authentication mechanism should the user directly access the webapp on a browser.
 
 # Modules
 
