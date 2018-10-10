@@ -19,5 +19,5 @@ public interface IdentityBroker {
      * @param source the identity provider identifier.
      * @return
      */
-    String generateIdToken(AuthenticationInfo authentication, String source);
+    String generateIdToken(AuthenticationInfo authentication, String source)  throws Exception ;
 }

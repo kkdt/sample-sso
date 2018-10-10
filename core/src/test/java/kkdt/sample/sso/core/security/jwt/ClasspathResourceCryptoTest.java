@@ -30,6 +30,7 @@ import com.nimbusds.jwt.SignedJWT;
 public class ClasspathResourceCryptoTest {
     private static ClasspathResourceRSAKey rsaKey;
     private static ClasspathResourceJWSVerifier verifier;
+    private static JWECrypto jweCrypto;
     
     @BeforeClass
     public static void before() throws UnrecoverableKeyException, KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, InvalidKeySpecException {
@@ -42,12 +43,15 @@ public class ClasspathResourceCryptoTest {
         
         verifier = new ClasspathResourceJWSVerifier("server.crt");
         assertNotNull(verifier);
+        
+        jweCrypto = new JWECrypto(rsaKey);
+        assertNotNull(jweCrypto);
     }
     
     @Test
     public void testExampleFromConnect2id() throws Exception {
         // Create RSA-signer with the private key
-        JWSSigner signer = new RSASSASigner(rsaKey.getKey());
+        JWSSigner signer = new RSASSASigner(rsaKey.getPrivateKey());
 
         // Prepare JWT with claims set
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
@@ -69,5 +73,12 @@ public class ClasspathResourceCryptoTest {
         
         assertNotNull(s);
         assertTrue(verifier.verifyJWS(s));
+        
+        // test JWE
+        String jwe = jweCrypto.encrypt(s);
+        assertNotNull(jwe);
+        String jws = jweCrypto.decrypt(jwe);
+        assertNotNull(jws);
+        assertTrue(verifier.verifyJWS(jws));
     }
 }

@@ -25,7 +25,8 @@ import kkdt.sample.sso.core.security.jwt.ClasspathResourceJWSVerifier;
 /**
  * Application controller that can be attached to the following actions:
  * <ol>
- * <li>Login</li>
+ * <li>Login (jws)</li>
+ * <li>Login (jwe)</li>
  * <li>Logout</li>
  * <li>Exit</li>
  * </ol>
@@ -100,8 +101,11 @@ public class ConsoleController
     @Override
     public void actionPerformed(ActionEvent e) {
         switch(e.getActionCommand()) {
-        case "Login":
-            doLogin();
+        case "Login (jws)":
+            doLogin("jws");
+            break;
+        case "Login (jwe)":
+            doLogin("jwe");
             break;
         case "Logout":
             doLogout();
@@ -141,13 +145,13 @@ public class ConsoleController
         logger.info(message);
     }
     
-    private void doLogin() {
+    private void doLogin(String source) {
         if(userName == null || authenticationManager == null) {
             doFeedback("Not configured for login");
         } else {
             doFeedback("Logging into application");
             try {
-                authenticationManager.login(userName.get());
+                authenticationManager.login(userName.get(), source);
             } catch (Exception e) {
                 doFeedback(e.getMessage());
                 logger.error(e);

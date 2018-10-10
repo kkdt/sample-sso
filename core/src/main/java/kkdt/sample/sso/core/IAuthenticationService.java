@@ -17,7 +17,8 @@ public interface IAuthenticationService {
      * 
      * @param userId
      * @param password
+     * @param identity provider name.
      * @return
      */
-    AuthenticationInfo authenticate(String userId, char[] password);
+    AuthenticationInfo authenticate(String userId, char[] password, String source);
 }

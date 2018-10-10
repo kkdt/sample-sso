@@ -22,7 +22,7 @@
     </beans:bean>
     
     <beans:bean id="authenticationProvider"
-        class="kkdt.sample.sso.core.security.AuthenticationInfoProvider">
+        class="kkdt.sample.sso.console.ConsoleAuthenticationProvider">
         <beans:constructor-arg ref="authenticationService" />
     </beans:bean>
 

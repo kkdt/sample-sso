@@ -19,38 +19,40 @@ import com.nimbusds.jwt.SignedJWT;
 
 import kkdt.sample.sso.core.security.AuthInfoSecured;
 
-/**
- * Authenticate a JWS token.
- * 
- * @author thinh ho
- *
- */
-public class JWSAuthenticationProvider implements AuthenticationProvider {
-    private static final Logger logger = Logger.getLogger(JWSAuthenticationProvider.class);
+public class JWEAuthenticationProvider implements AuthenticationProvider {
+    private static final Logger logger = Logger.getLogger(JWEAuthenticationProvider.class);
+    
+    private final JWECrypto jweCrypto;
+    
+    public JWEAuthenticationProvider(JWECrypto jweCrypto) {
+        this.jweCrypto = jweCrypto;
+    }
     
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         Authentication authenticated = null;
         if(authentication != null) {
-            JWSAuthenticateRequest _authentication = (JWSAuthenticateRequest)authentication;
+            JWEAuthenticationRequest _authentication = (JWEAuthenticationRequest)authentication;
             
             String idToken = (String)_authentication.getCredentials();
-            logger.info("Received id_token (JWS): " + idToken);
+            logger.info("Received id_token (JWE): " + idToken);
             
             boolean verified = false;
             try {
+                String decrypted = jweCrypto.decrypt(idToken);
+                
                 // verify the signature
                 verified = new ClasspathResourceJWSVerifier("server.crt")
-                    .verifyJWS(idToken);
+                    .verifyJWS(decrypted);
                 
                 // TODO: Verify claims as appropriate
                 
-                SignedJWT signed = SignedJWT.parse(idToken);
+                SignedJWT signed = SignedJWT.parse(decrypted);
                 authenticated = new AuthInfoSecured(signed.getJWTClaimsSet().getIssuer(),
                     verified ? idToken : null, 
-                    Stream.of(new SimpleGrantedAuthority(verified ? "JWS" : "UNAUTHORIZED")).collect(Collectors.toList()));
+                    Stream.of(new SimpleGrantedAuthority(verified ? "JWE" : "UNAUTHORIZED")).collect(Collectors.toList()));
             } catch (Exception e) {
-                throw new BadCredentialsException("Cannot verify id_token");
+                throw new BadCredentialsException("Cannot verify id_token", e);
             }
         }
         return authenticated;
@@ -58,7 +60,7 @@ public class JWSAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return (JWSAuthenticateRequest.class.isAssignableFrom(authentication));
+        return (JWEAuthenticationRequest.class.isAssignableFrom(authentication));
     }
 
 }

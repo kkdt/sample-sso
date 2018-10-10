@@ -31,15 +31,20 @@ public class AuthenticationService implements IAuthenticationService, Remote {
     }
     
     @Override
-    public AuthenticationInfo authenticate(String userId, char[] password) {
+    public AuthenticationInfo authenticate(String userId, char[] password, String source) {
         AuthenticationInfo auth = new AuthenticationInfo(userId);
         if(!validUser.equals(userId)) {
             logger.warn("Authenticating " + userId + " is not valid");
             auth.setSession(null);
         } else {
-            String idToken = identityBroker.generateIdToken(auth, ""); // default idp
+            String idToken = null;
+            try {
+                idToken = identityBroker.generateIdToken(auth, source);
+                logger.info(String.format("Generated IDToken from %s: %s", source, idToken));
+            } catch (Exception e) {
+                logger.error("Cannot generate id_token", e);
+            } 
             auth.setIdToken(idToken);
-            logger.info("Generated IDToken: " + idToken);
         }
         return auth;
     }

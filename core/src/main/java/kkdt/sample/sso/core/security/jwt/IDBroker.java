@@ -10,6 +10,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.apache.log4j.Logger;
+
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
@@ -27,9 +29,11 @@ import kkdt.sample.sso.core.IdentityBroker;
  *
  */
 public class IDBroker implements IdentityBroker {
+    private static final Logger logger = Logger.getLogger(IDBroker.class);
     private static final String ID = String.format("kkdt://%s/", IDBroker.class.getSimpleName());
     
     private final ClasspathResourceRSAKey keyProvider;
+    private final JWECrypto jweCrypto;
     
     /**
      * The default identity provider will the current server.
@@ -38,21 +42,33 @@ public class IDBroker implements IdentityBroker {
      */
     public IDBroker(ClasspathResourceRSAKey keyProvider) {
         this.keyProvider = keyProvider;
+        this.jweCrypto = new JWECrypto(keyProvider);
     }
     
     @Override
-    public String generateIdToken(AuthenticationInfo authentication, String source) {
+    public String generateIdToken(AuthenticationInfo authentication, String source)  throws Exception {
         if(authentication == null || source == null) {
             throw new IllegalStateException("Cannot generate an id_token, authentication is not valid");
         }
         
         String token = null;
         switch(source) {
+        case "jwe":
+            logger.info("Generating JWE token for authentication");
+            token = jweGenerateToken(authentication);
+            break;
         default:
-            token = generateIdTokenDefaultProvider(authentication);
+            logger.info("Generating JWS token for authentication");
+            token = jwsGenerateToken(authentication);
             break;
         }
         return token;
+    }
+    
+    private String jweGenerateToken(AuthenticationInfo authentication) throws Exception {
+        // generate the jws as the payload
+        String jws = jwsGenerateToken(authentication);
+        return jweCrypto.encrypt(jws);
     }
     
     /**
@@ -61,7 +77,7 @@ public class IDBroker implements IdentityBroker {
      * @param authentication
      * @return
      */
-    private String generateIdTokenDefaultProvider(AuthenticationInfo authentication) {
+    private String jwsGenerateToken(AuthenticationInfo authentication)  throws Exception {
         Date now = new Date();
         Calendar exp = Calendar.getInstance();
         exp.setTime(now);
@@ -78,7 +94,9 @@ public class IDBroker implements IdentityBroker {
         
         // the JWS to sign
         SignedJWT signedJWT = new SignedJWT(
-            new JWSHeader.Builder(JWSAlgorithm.RS256).keyID(keyProvider.getKeyID()).build(),
+            new JWSHeader.Builder(JWSAlgorithm.RS256)
+                .keyID(keyProvider.getKeyID())
+                .build(),
             claimsSet);
         
         // rsa-signer with the private key

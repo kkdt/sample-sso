@@ -17,32 +17,25 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 
-/**
- * Filter all requests coming into the configured url-match to build an authentication
- * request for Spring Security.
- * 
- * @author thinh ho
- *
- */
-public class JWSAuthenticationProcessingFilter extends AbstractAuthenticationProcessingFilter {
-    private static final Logger logger = Logger.getLogger(JWSAuthenticationProcessingFilter.class);
+public class JWEAuthenticationProcessingFilter extends AbstractAuthenticationProcessingFilter {
+    private static final Logger logger = Logger.getLogger(JWEAuthenticationProcessingFilter.class);
     
     /**
      * 
      * @param defaultFilterProcessesUrl
      * @param f how to extract the authentication request from the HTTP request.
      */
-    public JWSAuthenticationProcessingFilter(String defaultFilterProcessesUrl, 
-        final Function<HttpServletRequest, JWSAuthenticateRequest> f,
+    public JWEAuthenticationProcessingFilter(String defaultFilterProcessesUrl, 
+        final Function<HttpServletRequest, JWEAuthenticationRequest> f,
         final AuthenticationManager authenticationManager) 
     {
         super(defaultFilterProcessesUrl);
         setAuthenticationManager(authenticationManager);
-        this.authenticationDetailsSource = new AuthenticationDetailsSource<HttpServletRequest, JWSAuthenticateRequest>() {
+        this.authenticationDetailsSource = new AuthenticationDetailsSource<HttpServletRequest, JWEAuthenticationRequest>() {
             @Override
-            public JWSAuthenticateRequest buildDetails(HttpServletRequest context) {
-                JWSAuthenticateRequest idToken = f.apply(context);
-                logger.info("ID Token (JWS): " + idToken.getCredentials());
+            public JWEAuthenticationRequest buildDetails(HttpServletRequest context) {
+                JWEAuthenticationRequest idToken = f.apply(context);
+                logger.info("ID Token (JWE): " + idToken.getCredentials());
                 return idToken;
             }
         };
@@ -52,7 +45,7 @@ public class JWSAuthenticationProcessingFilter extends AbstractAuthenticationPro
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) 
         throws AuthenticationException 
     {
-        JWSAuthenticateRequest authRequest = (JWSAuthenticateRequest)authenticationDetailsSource.buildDetails(request);
+        JWEAuthenticationRequest authRequest = (JWEAuthenticationRequest)authenticationDetailsSource.buildDetails(request);
         
         // the authentication provider configured this authentication token will perform the authentication
         return this.getAuthenticationManager().authenticate(authRequest);

@@ -34,13 +34,13 @@ public class AuthenticationServiceTest {
     
     @Test
     public void testSuccessfulAuthentication() {
-        AuthenticationInfo auth = service.authenticate("admin", "password".toCharArray());
+        AuthenticationInfo auth = service.authenticate("admin", "password".toCharArray(), "");
         assertTrue(auth != null && auth.getSession() != null && auth.getIdToken() != null);
     }
     
     @Test
     public void testUnsuccessfulAuthentication() {
-        AuthenticationInfo auth = service.authenticate("hello", "password".toCharArray());
+        AuthenticationInfo auth = service.authenticate("hello", "password".toCharArray(), "");
         assertTrue(auth != null && auth.getSession() == null && auth.getIdToken() == null);
     }
 }

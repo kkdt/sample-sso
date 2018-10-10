@@ -22,8 +22,8 @@ public class AuthServiceTool {
                 .withHost("localhost")
                 .withPort(1099)
                 .build();
-            System.out.println("authenticate(admin): " + service.authenticate("admin", "password".toCharArray()));
-            System.out.println("authenticate(foo): " + service.authenticate("foo", "password".toCharArray()));
+            System.out.println("authenticate(admin): " + service.authenticate("admin", "password".toCharArray(), ""));
+            System.out.println("authenticate(foo): " + service.authenticate("foo", "password".toCharArray(), ""));
         } catch (Exception e) {
             e.printStackTrace();
         }

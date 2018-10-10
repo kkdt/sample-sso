@@ -26,10 +26,18 @@ public class JWTDetailsSource {
     };
     
     /**
-     * The URL containing an 'token' parameter being the id_token.
+     * The URL containing an 'token' parameter being the id_token - JWS.
      */
-    public static final Function<HttpServletRequest, JWSAuthenticateRequest> jwtURL = r -> {
+    public static final Function<HttpServletRequest, JWSAuthenticateRequest> jwsURL = r -> {
         String id = Optional.ofNullable(r.getParameter("token")).orElse("");
         return new JWSAuthenticateRequest(id);
+    };
+    
+    /**
+     * The URL containing an 'token' parameter being the id_token - JWE.
+     */
+    public static final Function<HttpServletRequest, JWEAuthenticationRequest> jweURL = r -> {
+        String id = Optional.ofNullable(r.getParameter("token")).orElse("");
+        return new JWEAuthenticationRequest(id);
     };
 }

@@ -49,7 +49,8 @@ public class ConsoleBuilder {
         Objects.requireNonNull(consoleController, "Require a Console Controller");
         
         final JButton exitBtn = new JButton("Exit");
-        final JButton actionBtn = new JButton("Login");
+        final JButton jwsBtn = new JButton("Login (jws)");
+        final JButton jweBtn = new JButton("Login (jwe)");
         final JButton launchBtn = new JButton("Launch");
         final JTextField name = new JTextField(15);
         final JTextArea textArea = new JTextArea(5, 20);
@@ -58,7 +59,8 @@ public class ConsoleBuilder {
         JPanel inputs = new JPanel();
         inputs.add(new JLabel("Username: "));
         inputs.add(name);
-        inputs.add(actionBtn);
+        inputs.add(jwsBtn);
+        inputs.add(jweBtn);
         inputs.add(exitBtn);
         
         JPanel urlInputs = new JPanel();
@@ -93,7 +95,6 @@ public class ConsoleBuilder {
                 .authenticationListener(event -> {
                     boolean authenticated = event.getAuthentication().isAuthenticated();
                     SwingUtilities.invokeLater(() -> {
-                        actionBtn.setText(authenticated ? "Logout" : "Login");
                         name.setEnabled(!authenticated);
                         frame.pack();
                     });
@@ -106,7 +107,8 @@ public class ConsoleBuilder {
                 });
             
             exitBtn.addActionListener(consoleController);
-            actionBtn.addActionListener(consoleController);
+            jwsBtn.addActionListener(consoleController);
+            jweBtn.addActionListener(consoleController);
             launchBtn.addActionListener(consoleController);
         }
         return frame;

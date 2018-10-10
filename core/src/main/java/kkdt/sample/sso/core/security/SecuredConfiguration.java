@@ -19,6 +19,10 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import kkdt.sample.sso.core.AuthenticationServiceLocator;
 import kkdt.sample.sso.core.IAuthenticationService;
+import kkdt.sample.sso.core.security.jwt.ClasspathResourceRSAKey;
+import kkdt.sample.sso.core.security.jwt.JWEAuthenticationProcessingFilter;
+import kkdt.sample.sso.core.security.jwt.JWEAuthenticationProvider;
+import kkdt.sample.sso.core.security.jwt.JWECrypto;
 import kkdt.sample.sso.core.security.jwt.JWSAuthenticationProcessingFilter;
 import kkdt.sample.sso.core.security.jwt.JWSAuthenticationProvider;
 import kkdt.sample.sso.core.security.jwt.JWTDetailsSource;
@@ -53,21 +57,21 @@ public class SecuredConfiguration extends WebSecurityConfigurerAdapter {
     
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-//        JWTAuthenticationProcessingFilter jwtHeaaderFilter = 
-//            new JWTAuthenticationProcessingFilter("/auth/idToken", JWTDetailsSource.fromHeaders);
-//        jwtHeaaderFilter.setAuthenticationManager(authenticationManagerBean());
+        JWSAuthenticationProcessingFilter jwsFilter = 
+            new JWSAuthenticationProcessingFilter("/jws", JWTDetailsSource.jwsURL, authenticationManager());
         
-        JWSAuthenticationProcessingFilter jwtParameterFilter = 
-            new JWSAuthenticationProcessingFilter("/jws", JWTDetailsSource.jwtURL, authenticationManager());
+        JWEAuthenticationProcessingFilter jweFilter = 
+            new JWEAuthenticationProcessingFilter("/jwe", JWTDetailsSource.jweURL, authenticationManager());
         
         // https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#csrf
         
         http.exceptionHandling()
             .and()
-                .addFilterAfter(jwtParameterFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(jwsFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(jweFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeRequests()
                 .antMatchers("/**")
-                .hasAnyAuthority("ADMIN", "JWS")
+                .hasAnyAuthority("ADMIN", "JWS", "JWE")
             // authenticate all other requests
             .anyRequest().authenticated()
             .and().formLogin()
@@ -79,7 +83,8 @@ public class SecuredConfiguration extends WebSecurityConfigurerAdapter {
             // additional authentication providers
             .and()
                 .authenticationProvider(new AuthenticationInfoProvider(authenticationService))
-                .authenticationProvider(new JWSAuthenticationProvider());
+                .authenticationProvider(new JWSAuthenticationProvider())
+                .authenticationProvider(new JWEAuthenticationProvider(new JWECrypto(new ClasspathResourceRSAKey("server.p12", "server", "changeit"))));
         
         // TODO: Spring Security and session management - Allow Spring Security to create sessions?
     }

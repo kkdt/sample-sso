@@ -12,6 +12,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
@@ -55,11 +56,23 @@ public class GlobalSecurityContextAuthenticationManager
      * Authenticate the user name.
      * 
      * @param username
+     * @param source identity provider name.
      * @return
      */
-    public Authentication login(String username) {
-        return authenticationManager
-            .authenticate(new UsernamePasswordAuthenticationToken(username, ""));
+    public Authentication login(String username, String source) {
+        AbstractAuthenticationToken token = null;
+        switch(source) {
+        case "jws":
+            token = new JWSToken(username, "");
+            break;
+        case "jwe":
+            token = new JWEToken(username, "");
+            break;
+        default:
+            token = new UsernamePasswordAuthenticationToken(username, "");
+            break;
+        }
+        return authenticationManager.authenticate(token);
     }
     
     /**
