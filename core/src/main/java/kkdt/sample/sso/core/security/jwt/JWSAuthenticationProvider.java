@@ -25,8 +25,8 @@ import kkdt.sample.sso.core.security.AuthInfoSecured;
  * @author thinh ho
  *
  */
-public class JWTAuthenticationProvider implements AuthenticationProvider {
-    private static final Logger logger = Logger.getLogger(JWTAuthenticationProvider.class);
+public class JWSAuthenticationProvider implements AuthenticationProvider {
+    private static final Logger logger = Logger.getLogger(JWSAuthenticationProvider.class);
     
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {

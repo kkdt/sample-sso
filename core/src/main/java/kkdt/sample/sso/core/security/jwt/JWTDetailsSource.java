@@ -26,9 +26,9 @@ public class JWTDetailsSource {
     };
     
     /**
-     * The URL containing an 'id' parameter being the id_token.
+     * The URL containing an 'token' parameter being the id_token.
      */
-    public static final Function<HttpServletRequest, JWSAuthenticateRequest> fromURL = r -> {
+    public static final Function<HttpServletRequest, JWSAuthenticateRequest> jwtURL = r -> {
         String id = Optional.ofNullable(r.getParameter("token")).orElse("");
         return new JWSAuthenticateRequest(id);
     };

@@ -20,7 +20,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import kkdt.sample.sso.core.AuthenticationServiceLocator;
 import kkdt.sample.sso.core.IAuthenticationService;
 import kkdt.sample.sso.core.security.jwt.JWSAuthenticationProcessingFilter;
-import kkdt.sample.sso.core.security.jwt.JWTAuthenticationProvider;
+import kkdt.sample.sso.core.security.jwt.JWSAuthenticationProvider;
 import kkdt.sample.sso.core.security.jwt.JWTDetailsSource;
 
 /**
@@ -58,7 +58,7 @@ public class SecuredConfiguration extends WebSecurityConfigurerAdapter {
 //        jwtHeaaderFilter.setAuthenticationManager(authenticationManagerBean());
         
         JWSAuthenticationProcessingFilter jwtParameterFilter = 
-            new JWSAuthenticationProcessingFilter("/jws", JWTDetailsSource.fromURL, authenticationManager());
+            new JWSAuthenticationProcessingFilter("/jws", JWTDetailsSource.jwtURL, authenticationManager());
         
         // https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#csrf
         
@@ -79,7 +79,7 @@ public class SecuredConfiguration extends WebSecurityConfigurerAdapter {
             // additional authentication providers
             .and()
                 .authenticationProvider(new AuthenticationInfoProvider(authenticationService))
-                .authenticationProvider(new JWTAuthenticationProvider());
+                .authenticationProvider(new JWSAuthenticationProvider());
         
         // TODO: Spring Security and session management - Allow Spring Security to create sessions?
     }

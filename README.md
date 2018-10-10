@@ -29,7 +29,7 @@ Whenever a username and password is asked, the only valid user is `admin`; any p
 
 1. Log into the Console
 2. Copy the id_token from the feedback area
-3. Launch the URL: `https://localhost:8991/auth?id=<token>` - Assure that you are authenticated
+3. Launch `romeo` via single sign-on (JWS) by pasting the token to the text area and click 'Launch' - `https://localhost:8991/jws?token=<token>`
 
 # TODO
 
