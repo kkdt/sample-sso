@@ -80,7 +80,7 @@ public class ConsoleBuilder {
         frame.getContentPane().add(urlInputs, BorderLayout.SOUTH);
         frame.pack();
         
-        url.setText("https://localhost:8991/auth?id=");
+        url.setText("https://localhost:8991/jws?token=");
         
         if(consoleController != null) {
             consoleController

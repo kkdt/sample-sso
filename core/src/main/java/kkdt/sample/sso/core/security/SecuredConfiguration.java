@@ -19,7 +19,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import kkdt.sample.sso.core.AuthenticationServiceLocator;
 import kkdt.sample.sso.core.IAuthenticationService;
-import kkdt.sample.sso.core.security.jwt.JWTAuthenticationProcessingFilter;
+import kkdt.sample.sso.core.security.jwt.JWSAuthenticationProcessingFilter;
 import kkdt.sample.sso.core.security.jwt.JWTAuthenticationProvider;
 import kkdt.sample.sso.core.security.jwt.JWTDetailsSource;
 
@@ -57,8 +57,8 @@ public class SecuredConfiguration extends WebSecurityConfigurerAdapter {
 //            new JWTAuthenticationProcessingFilter("/auth/idToken", JWTDetailsSource.fromHeaders);
 //        jwtHeaaderFilter.setAuthenticationManager(authenticationManagerBean());
         
-        JWTAuthenticationProcessingFilter jwtParameterFilter = 
-            new JWTAuthenticationProcessingFilter("/auth", JWTDetailsSource.fromURL, authenticationManager());
+        JWSAuthenticationProcessingFilter jwtParameterFilter = 
+            new JWSAuthenticationProcessingFilter("/jws", JWTDetailsSource.fromURL, authenticationManager());
         
         // https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#csrf
         
@@ -67,7 +67,7 @@ public class SecuredConfiguration extends WebSecurityConfigurerAdapter {
                 .addFilterAfter(jwtParameterFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeRequests()
                 .antMatchers("/**")
-                .hasAnyAuthority("ADMIN", "JWT")
+                .hasAnyAuthority("ADMIN", "JWS")
             // authenticate all other requests
             .anyRequest().authenticated()
             .and().formLogin()

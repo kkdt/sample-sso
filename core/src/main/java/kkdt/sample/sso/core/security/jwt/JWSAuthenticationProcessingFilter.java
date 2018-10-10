@@ -24,24 +24,24 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
  * @author thinh ho
  *
  */
-public class JWTAuthenticationProcessingFilter extends AbstractAuthenticationProcessingFilter {
-    private static final Logger logger = Logger.getLogger(JWTAuthenticationProcessingFilter.class);
+public class JWSAuthenticationProcessingFilter extends AbstractAuthenticationProcessingFilter {
+    private static final Logger logger = Logger.getLogger(JWSAuthenticationProcessingFilter.class);
     
     /**
      * 
      * @param defaultFilterProcessesUrl
      * @param f how to extract the authentication request from the HTTP request.
      */
-    public JWTAuthenticationProcessingFilter(String defaultFilterProcessesUrl, 
-        final Function<HttpServletRequest, JWTAuthenticateRequest> f,
+    public JWSAuthenticationProcessingFilter(String defaultFilterProcessesUrl, 
+        final Function<HttpServletRequest, JWSAuthenticateRequest> f,
         final AuthenticationManager authenticationManager) 
     {
         super(defaultFilterProcessesUrl);
         setAuthenticationManager(authenticationManager);
-        this.authenticationDetailsSource = new AuthenticationDetailsSource<HttpServletRequest, JWTAuthenticateRequest>() {
+        this.authenticationDetailsSource = new AuthenticationDetailsSource<HttpServletRequest, JWSAuthenticateRequest>() {
             @Override
-            public JWTAuthenticateRequest buildDetails(HttpServletRequest context) {
-                JWTAuthenticateRequest idToken = f.apply(context);
+            public JWSAuthenticateRequest buildDetails(HttpServletRequest context) {
+                JWSAuthenticateRequest idToken = f.apply(context);
                 logger.info("ID Token: " + idToken.getCredentials());
                 return idToken;
             }
@@ -52,7 +52,7 @@ public class JWTAuthenticationProcessingFilter extends AbstractAuthenticationPro
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) 
         throws AuthenticationException 
     {
-        JWTAuthenticateRequest authRequest = (JWTAuthenticateRequest)authenticationDetailsSource.buildDetails(request);
+        JWSAuthenticateRequest authRequest = (JWSAuthenticateRequest)authenticationDetailsSource.buildDetails(request);
         
         // the authentication provider configured this authentication token will perform the authentication
         return this.getAuthenticationManager().authenticate(authRequest);

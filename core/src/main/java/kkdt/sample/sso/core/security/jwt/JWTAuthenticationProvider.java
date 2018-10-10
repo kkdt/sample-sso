@@ -32,7 +32,7 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         Authentication authenticated = null;
         if(authentication != null) {
-            JWTAuthenticateRequest _authentication = (JWTAuthenticateRequest)authentication;
+            JWSAuthenticateRequest _authentication = (JWSAuthenticateRequest)authentication;
             
             String idToken = (String)_authentication.getCredentials();
             logger.info("Received id_token: " + idToken);
@@ -48,7 +48,7 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
                 SignedJWT signed = SignedJWT.parse(idToken);
                 authenticated = new AuthInfoSecured(signed.getJWTClaimsSet().getIssuer(),
                     verified ? idToken : null, 
-                    Stream.of(new SimpleGrantedAuthority(verified ? "JWT" : "UNAUTHORIZED")).collect(Collectors.toList()));
+                    Stream.of(new SimpleGrantedAuthority(verified ? "JWS" : "UNAUTHORIZED")).collect(Collectors.toList()));
             } catch (Exception e) {
                 throw new BadCredentialsException("Cannot verify id_token");
             }
@@ -58,7 +58,7 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return (JWTAuthenticateRequest.class.isAssignableFrom(authentication));
+        return (JWSAuthenticateRequest.class.isAssignableFrom(authentication));
     }
 
 }

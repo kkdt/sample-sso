@@ -12,20 +12,20 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 /**
- * Authentication request that wraps an id_token.
+ * Authentication request that wraps an id_token - JWS (signature).
  * 
  * @author thinh ho
  *
  */
-public class JWTAuthenticateRequest extends AbstractAuthenticationToken {
+public class JWSAuthenticateRequest extends AbstractAuthenticationToken {
     private static final long serialVersionUID = 4696506003551444240L;
     
     private final String idToken;
     private String username;
     
-    public JWTAuthenticateRequest(String idToken) 
+    public JWSAuthenticateRequest(String idToken) 
     {
-        super(Stream.of(new SimpleGrantedAuthority("JWT")).collect(Collectors.toList()));
+        super(Stream.of(new SimpleGrantedAuthority("JWS")).collect(Collectors.toList()));
         this.idToken = idToken;
     }
     

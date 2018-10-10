@@ -20,16 +20,16 @@ public class JWTDetailsSource {
     /**
      * Authentication header containing the 'Bearer' being the id_token.
      */
-    public static final Function<HttpServletRequest, JWTAuthenticateRequest> fromHeaders = r -> {
+    public static final Function<HttpServletRequest, JWSAuthenticateRequest> fromHeaders = r -> {
         String bearer = Optional.ofNullable(r.getHeader("Bearer")).orElse("");
-        return new JWTAuthenticateRequest(bearer);
+        return new JWSAuthenticateRequest(bearer);
     };
     
     /**
      * The URL containing an 'id' parameter being the id_token.
      */
-    public static final Function<HttpServletRequest, JWTAuthenticateRequest> fromURL = r -> {
-        String id = Optional.ofNullable(r.getParameter("id")).orElse("");
-        return new JWTAuthenticateRequest(id);
+    public static final Function<HttpServletRequest, JWSAuthenticateRequest> fromURL = r -> {
+        String id = Optional.ofNullable(r.getParameter("token")).orElse("");
+        return new JWSAuthenticateRequest(id);
     };
 }
