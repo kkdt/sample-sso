@@ -19,6 +19,12 @@ import com.nimbusds.jwt.SignedJWT;
 
 import kkdt.sample.sso.core.security.AuthInfoSecured;
 
+/**
+ * Authenticate a JWE token.
+ * 
+ * @author thinh ho
+ *
+ */
 public class JWEAuthenticationProvider implements AuthenticationProvider {
     private static final Logger logger = Logger.getLogger(JWEAuthenticationProvider.class);
     

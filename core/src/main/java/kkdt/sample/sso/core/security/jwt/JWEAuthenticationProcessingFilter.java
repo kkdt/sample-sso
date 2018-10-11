@@ -17,6 +17,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 
+/**
+ * Filter all requests coming into the configured url-match to build an authentication
+ * request for Spring Security - expecting a JWE token.
+ * 
+ * @author thinh ho
+ *
+ */
 public class JWEAuthenticationProcessingFilter extends AbstractAuthenticationProcessingFilter {
     private static final Logger logger = Logger.getLogger(JWEAuthenticationProcessingFilter.class);
     

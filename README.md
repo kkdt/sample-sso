@@ -27,10 +27,17 @@ Whenever a username and password is asked, the only valid user is `admin`; any p
 
 # Single Sign-On
 
-1. Log into the Console
+1. Log into the Console either via 'jws' or 'jwe'
 2. Copy the id_token from the feedback area
-3. Launch `romeo` via single sign-on (JWS) by pasting the token to the text area and click 'Launch' - `https://localhost:8991/jws?token=<token>`
+3. Launch `romeo` via single sign-on (JWS) by pasting the token to the text area and click 'Launch'
+
+```
+JWS endpoint - https://localhost:8991/jws?token=<token>
+JWE endpoint - https://localhost:8991/jwe?token=<token>
+```
 
 # TODO
+
+Backend channel for obtaining the identity token.
 
 There is an additional endpoint at `romeo` to test authenticated REST calls - `https://localhost:8991/echo?message=message`

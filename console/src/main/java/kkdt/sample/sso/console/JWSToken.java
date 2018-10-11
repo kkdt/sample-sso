@@ -7,9 +7,20 @@ package kkdt.sample.sso.console;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
+/**
+ * Console-only authentication token to represent a JWS.
+ * 
+ * @author thinh ho
+ *
+ */
 public class JWSToken extends UsernamePasswordAuthenticationToken {
     private static final long serialVersionUID = 2048223705904666491L;
 
+    /**
+     * 
+     * @param principal the user name.
+     * @param credentials the password.
+     */
     public JWSToken(Object principal, Object credentials) {
         super(principal, credentials);
     }

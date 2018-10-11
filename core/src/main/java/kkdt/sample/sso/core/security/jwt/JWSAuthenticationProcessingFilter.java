@@ -19,7 +19,7 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 
 /**
  * Filter all requests coming into the configured url-match to build an authentication
- * request for Spring Security.
+ * request for Spring Security - expecting a JWS token.
  * 
  * @author thinh ho
  *

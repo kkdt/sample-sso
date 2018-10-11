@@ -6,13 +6,17 @@
 package kkdt.sample.sso.console;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.Objects;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -48,9 +52,21 @@ public class ConsoleBuilder {
     public JFrame build(JFrame frame) {
         Objects.requireNonNull(consoleController, "Require a Console Controller");
         
+        JRadioButton jws = new JRadioButton("jws");
+        JRadioButton jwe = new JRadioButton("jwe");
+        
+        ButtonGroup btnGroup = new ButtonGroup();
+        btnGroup.add(jws);
+        btnGroup.add(jwe);
+        jws.setSelected(true); // default
+        
+        JPanel sources = new JPanel();
+        sources.setLayout(new BoxLayout(sources, BoxLayout.Y_AXIS));
+        sources.add(jws);
+        sources.add(jwe);
+        
         final JButton exitBtn = new JButton("Exit");
-        final JButton jwsBtn = new JButton("Login (jws)");
-        final JButton jweBtn = new JButton("Login (jwe)");
+        final JButton actionBtn = new JButton("Login");
         final JButton launchBtn = new JButton("Launch");
         final JTextField name = new JTextField(15);
         final JTextArea textArea = new JTextArea(5, 20);
@@ -59,8 +75,8 @@ public class ConsoleBuilder {
         JPanel inputs = new JPanel();
         inputs.add(new JLabel("Username: "));
         inputs.add(name);
-        inputs.add(jwsBtn);
-        inputs.add(jweBtn);
+        inputs.add(sources);
+        inputs.add(actionBtn);
         inputs.add(exitBtn);
         
         JPanel urlInputs = new JPanel();
@@ -80,7 +96,13 @@ public class ConsoleBuilder {
         frame.getContentPane().add(inputs, BorderLayout.NORTH);
         frame.getContentPane().add(feedback, BorderLayout.CENTER);
         frame.getContentPane().add(urlInputs, BorderLayout.SOUTH);
-        frame.pack();
+        
+        SwingUtilities.invokeLater(() -> {
+            final Dimension d = new Dimension(600, 300);
+            frame.setPreferredSize(d);
+            frame.setSize(d);
+            frame.pack();
+        });
         
         url.setText("https://localhost:8991/jws?token=");
         
@@ -102,14 +124,21 @@ public class ConsoleBuilder {
                 // additional logging callback
                 .authenticationListener(event -> {
                     SecurityContext context = SecurityContextHolder.getContext();
+                    if(event.getAuthentication() != null) {
+                        actionBtn.setText("Logout");
+                    }
                     logger.info("Event.authentication: " + event.getAuthentication());
                     logger.info("SecurityContext.getAuthentication: " + context.getAuthentication());
                 });
             
             exitBtn.addActionListener(consoleController);
-            jwsBtn.addActionListener(consoleController);
-            jweBtn.addActionListener(consoleController);
+            actionBtn.addActionListener(consoleController);
             launchBtn.addActionListener(consoleController);
+            
+            jws.addActionListener(consoleController);
+            jws.addActionListener(a -> url.setText("https://localhost:8991/jws?token="));
+            jwe.addActionListener(consoleController);
+            jwe.addActionListener(a -> url.setText("https://localhost:8991/jwe?token="));
         }
         return frame;
     }

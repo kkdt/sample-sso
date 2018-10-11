@@ -49,11 +49,16 @@ public class ConsoleController
     private Supplier<String> url;
     private Consumer<String> feedback;
     private final Collection<Consumer<AbstractAuthenticationEvent>> authenticationListeners = new Vector<>();
+    private String identitySource = "jws";
     
     public ConsoleController(GlobalSecurityContextAuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
     }
     
+    public void setIdentitySource(String identitySource) {
+        this.identitySource = identitySource;
+    }
+
     /**
      * Input for the user name field.
      * 
@@ -101,17 +106,18 @@ public class ConsoleController
     @Override
     public void actionPerformed(ActionEvent e) {
         switch(e.getActionCommand()) {
-        case "Login (jws)":
-            doLogin("jws");
-            break;
-        case "Login (jwe)":
-            doLogin("jwe");
+        case "Login":
+            doLogin(identitySource);
             break;
         case "Logout":
             doLogout();
             break;
         case "Launch":
             doLaunch();
+            break;
+        case "jws":
+        case "jwe":
+            identitySource = e.getActionCommand();
             break;
         case "Exit":
             System.exit(0);
