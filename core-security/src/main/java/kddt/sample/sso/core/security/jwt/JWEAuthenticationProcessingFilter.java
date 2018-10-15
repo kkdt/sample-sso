@@ -5,8 +5,13 @@
  */
 package kddt.sample.sso.core.security.jwt;
 
+import java.io.IOException;
 import java.util.function.Function;
 
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -56,6 +61,13 @@ public class JWEAuthenticationProcessingFilter extends AbstractAuthenticationPro
         
         // the authentication provider configured this authentication token will perform the authentication
         return this.getAuthenticationManager().authenticate(authRequest);
+    }
+    
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
+        throws IOException, ServletException 
+    {
+        super.doFilter(request, response, chain);
     }
 
 }

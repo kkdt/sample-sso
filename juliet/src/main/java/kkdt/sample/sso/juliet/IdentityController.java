@@ -24,6 +24,7 @@ import kkdt.sample.sso.core.JWECrypto;
 import kkdt.sample.sso.core.JWECrypto.Output;
 
 @RestController
+@SuppressWarnings("unused")
 public class IdentityController {
     private static final Logger logger = Logger.getLogger(IdentityController.class);
     
@@ -38,6 +39,35 @@ public class IdentityController {
     
     @Autowired
     private ClasspathResourceJWSVerifier jwsVerifier;
+    
+    /**
+     * Generate an cookie with the encrypted id_token.
+     * 
+     * @param payload
+     * @return
+     */
+    private Cookie generateEncryptedCookie(String payload) {
+        Cookie cookie = new Cookie("juliet", payload);
+        /*
+         * Sends the cookie from the browser to the server only when using a 
+         * secure protocol
+         */
+        cookie.setSecure(true);
+        /*
+         * -1 indicates not stored and is a session cookie and will be deleted
+         * after browser is closed
+         */
+        cookie.setMaxAge(-1);
+        /*
+         * The HttpOnly flag in cookies makes it so that changing cookie values 
+         * through JavaScript is not possible - mitigates cross-site scripting 
+         * (XSS) attacks.
+         */
+        cookie.setHttpOnly(true);
+        cookie.setPath("/sso");
+        cookie.setVersion(1);
+        return cookie;
+    }
     
     @RequestMapping(path="/login", method=RequestMethod.GET)
     public void login(@RequestParam("url")String destination, @RequestParam("user") String userId,
@@ -63,29 +93,6 @@ public class IdentityController {
     @RequestMapping(path="/jwk", method=RequestMethod.GET, produces="application/json")
     public String jwk(HttpServletRequest request, HttpServletResponse response) throws Exception {
         return rsaKey.getKey().toPublicJWK().toJSONString();
-    }
-    
-    private Cookie generateEncryptedCookie(String payload) {
-        Cookie cookie = new Cookie("juliet", payload);
-        /*
-         * Sends the cookie from the browser to the server only when using a 
-         * secure protocol
-         */
-        cookie.setSecure(true);
-        /*
-         * -1 indicates not stored and is a session cookie and will be deleted
-         * after browser is closed
-         */
-        cookie.setMaxAge(-1);
-        /*
-         * The HttpOnly flag in cookies makes it so that changing cookie values 
-         * through JavaScript is not possible - mitigates cross-site scripting 
-         * (XSS) attacks.
-         */
-        cookie.setHttpOnly(true);
-        cookie.setPath("/public");
-        cookie.setVersion(1);
-        return cookie;
     }
     
     @RequestMapping(path="/redirect", method=RequestMethod.GET)

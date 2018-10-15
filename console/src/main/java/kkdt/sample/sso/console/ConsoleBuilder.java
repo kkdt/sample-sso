@@ -101,7 +101,7 @@ public class ConsoleBuilder {
         frame.getContentPane().add(urlInputs, BorderLayout.SOUTH);
         
         SwingUtilities.invokeLater(() -> {
-            final Dimension d = new Dimension(600, 300);
+            final Dimension d = new Dimension(650, 300);
             frame.setPreferredSize(d);
             frame.setSize(d);
             frame.pack();
@@ -153,6 +153,7 @@ public class ConsoleBuilder {
             jws.addActionListener(a -> url.setText("https://localhost:8991/jws?token="));
             jwe.addActionListener(consoleController);
             jwe.addActionListener(a -> url.setText("https://localhost:8991/jwe?token="));
+            sso.addActionListener(a -> url.setText(""));
         }
         return frame;
     }

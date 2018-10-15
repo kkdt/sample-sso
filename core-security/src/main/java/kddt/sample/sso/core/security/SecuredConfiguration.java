@@ -64,9 +64,9 @@ public class SecuredConfiguration extends WebSecurityConfigurerAdapter {
         
         http.exceptionHandling()
             .and()
+                .addFilterAfter(ssoFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(jwsFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(jweFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(ssoFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeRequests()
                 .antMatchers("/public")
                 .anonymous()
@@ -81,6 +81,7 @@ public class SecuredConfiguration extends WebSecurityConfigurerAdapter {
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .invalidateHttpSession(true)
                 .logoutSuccessUrl(contextPath)
+                .deleteCookies("JSESSIONID","juliet")
             // additional authentication providers
             .and()
                 .authenticationProvider(new AuthenticationInfoProvider(authenticationService))
