@@ -7,9 +7,10 @@
  
 rootProject.name = 'sample-sso'
 
-include 'tools'
-include 'romeo'
-include 'juliet'
-include 'core'
 include 'authServer'
 include 'console'
+include 'core'
+include 'core-security'
+include 'juliet'
+include 'romeo'
+include 'tools'

@@ -20,10 +20,17 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.remoting.rmi.RmiServiceExporter;
 
+import kkdt.sample.sso.core.ClasspathResourceRSAKey;
 import kkdt.sample.sso.core.IAuthenticationService;
-import kkdt.sample.sso.core.security.jwt.ClasspathResourceRSAKey;
-import kkdt.sample.sso.core.security.jwt.IDBroker;
+import kkdt.sample.sso.core.IdentityBroker;
 
+/**
+ * The authentication service application exposes the {@linkplain IAuthenticationService}
+ * and {@linkplain IdentityBroker} APIs in an RMI interface.
+ * 
+ * @author thinh ho
+ *
+ */
 @SpringBootApplication
 public class AuthenticationServerApplication {
     private static final Logger logger = Logger.getLogger(AuthenticationServerApplication.class);
@@ -31,27 +38,49 @@ public class AuthenticationServerApplication {
     @Value("${AuthenticationServerApplication.validUser}")
     private String validUser;
     
-    @Value("${AuthenticationServerApplication.port}")
-    private int port;
+    @Value("${AuthenticationServerApplication.authServerPort:1099}")
+    private int authServerPort;
+    
+    @Value("${AuthenticationServerApplication.idBrokerPort:1098}")
+    private int idBrokerPort;
     
     @Bean
-    public IAuthenticationService authenticationService() 
-        throws UnrecoverableKeyException, KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException 
-    {
-        return new AuthenticationService(validUser, 
-            new IDBroker(new ClasspathResourceRSAKey("server.p12", "server", "changeit")));
+    public IdentityBroker identityBroker() throws Exception {
+        return new IDBroker(new ClasspathResourceRSAKey("server.p12", "server", "changeit"));
     }
     
     @Bean
-    public RmiServiceExporter rmiExporter(IAuthenticationService authenticationService) {
+    public IAuthenticationService authenticationService(IdentityBroker identityBroker) 
+        throws UnrecoverableKeyException, KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException 
+    {
+        return new AuthenticationService(validUser, identityBroker);
+    }
+    
+    @Bean
+    public RmiServiceExporter rmiAuthenticationService(IAuthenticationService authenticationService) {
         RmiServiceExporter exporter = new RmiServiceExporter();
         exporter.setServiceInterface(IAuthenticationService.class);
         exporter.setService(authenticationService);
         exporter.setServiceName(IAuthenticationService.class.getSimpleName());
-        exporter.setRegistryPort(port); 
+        exporter.setRegistryPort(authServerPort); 
         return exporter;
     }
     
+    @Bean
+    public RmiServiceExporter rmiIdentityBroker(IdentityBroker identityBroker) {
+        RmiServiceExporter exporter = new RmiServiceExporter();
+        exporter.setServiceInterface(IdentityBroker.class);
+        exporter.setService(identityBroker);
+        exporter.setServiceName(IdentityBroker.class.getSimpleName());
+        exporter.setRegistryPort(idBrokerPort); 
+        return exporter;
+    }
+    
+    /**
+     * Application entry.
+     * 
+     * @param args
+     */
     public static void main(String[] args) {
         new SpringApplicationBuilder(AuthenticationServerApplication.class)
             .bannerMode(Mode.LOG)
@@ -59,6 +88,8 @@ public class AuthenticationServerApplication {
             .headless(true)
             .web(WebApplicationType.NONE)
             .run(args);
+        
         logger.info("RMI interface active " + IAuthenticationService.class.getSimpleName());
+        logger.info("RMI interface active " + IdentityBroker.class.getSimpleName());
     }
 }

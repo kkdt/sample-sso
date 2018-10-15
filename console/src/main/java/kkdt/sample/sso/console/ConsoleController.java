@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
 
-import kkdt.sample.sso.core.security.jwt.ClasspathResourceJWSVerifier;
+import kkdt.sample.sso.core.ClasspathResourceJWSVerifier;
 
 /**
  * Application controller that can be attached to the following actions:

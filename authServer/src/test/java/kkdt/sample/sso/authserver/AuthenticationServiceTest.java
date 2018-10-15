@@ -17,9 +17,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import kkdt.sample.sso.core.AuthenticationInfo;
+import kkdt.sample.sso.core.ClasspathResourceRSAKey;
 import kkdt.sample.sso.core.IdentityBroker;
-import kkdt.sample.sso.core.security.jwt.ClasspathResourceRSAKey;
-import kkdt.sample.sso.core.security.jwt.IDBroker;
 
 public class AuthenticationServiceTest {
     private static AuthenticationService service;

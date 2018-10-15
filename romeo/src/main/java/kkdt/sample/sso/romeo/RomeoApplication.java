@@ -9,7 +9,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
-import kkdt.sample.sso.core.security.SecuredConfiguration;
+import kddt.sample.sso.core.security.SecuredConfiguration;
 
 @SpringBootApplication
 @Import(value=SecuredConfiguration.class)

@@ -3,7 +3,7 @@
  * This file is part of 'sample-sso' which is released under the MIT license.
  * See LICENSE at the project root directory.
  */
-package kkdt.sample.sso.core.security;
+package kddt.sample.sso.core.security;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

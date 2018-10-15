@@ -4,26 +4,29 @@
  * See LICENSE at the project root directory.
  */
 
-description = 'sample-sso: core'
+description = 'sample-sso: core/api'
 
 apply plugin: 'java-library'
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-security:2.0.5.RELEASE") {
-        exclude module : 'spring-boot-starter-logging'
-    }
-    
-    compile("org.springframework.boot:spring-boot-starter-web:2.0.5.RELEASE") {
-        exclude module : 'spring-boot-starter-logging'
-    }
-    
-    compile 'org.springframework.security:spring-security-jwt:1.0.9.RELEASE'
-    compile 'org.springframework.security:spring-security-oauth2-client:5.1.0.RELEASE'
-    compile 'org.springframework.security:spring-security-oauth2-jose:5.1.0.RELEASE'
-    
-    compile 'org.springframework.security.oauth:spring-security-oauth2:2.0.3.RELEASE'
-    
+    compile 'com.nimbusds:nimbus-jose-jwt:6.0.2'
 //    compile 'com.auth0:java-jwt:3.4.0'
+//    compile 'org.springframework.security:spring-security-oauth2-jose:5.1.0.RELEASE'
+    
+    compile("org.springframework.boot:spring-boot-starter:2.0.5.RELEASE") {
+        exclude module : 'spring-boot-starter-logging'
+    }
+    
+//    compile("org.springframework.boot:spring-boot-starter-security:2.0.5.RELEASE") {
+//        exclude module : 'spring-boot-starter-logging'
+//    }
+//    compile("org.springframework.boot:spring-boot-starter-web:2.0.5.RELEASE") {
+//        exclude module : 'spring-boot-starter-logging'
+//    }
+//    compile 'org.springframework.security:spring-security-jwt:1.0.9.RELEASE'
+//    compile 'org.springframework.security:spring-security-oauth2-client:5.1.0.RELEASE'
+//    compile 'org.springframework.security:spring-security-oauth2-jose:5.1.0.RELEASE'
+//    compile 'org.springframework.security.oauth:spring-security-oauth2:2.0.3.RELEASE'
 }
 
 // the public certificates will be packaged for all modules

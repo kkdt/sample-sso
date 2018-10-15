@@ -3,12 +3,16 @@
  * This file is part of 'sample-sso' which is released under the MIT license.
  * See LICENSE at the project root directory.
  */
-package kkdt.sample.sso.core.security.jwt;
+package kkdt.sample.sso.authserver;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
@@ -19,8 +23,10 @@ import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
-import kkdt.sample.sso.core.AuthenticationInfo;
+import kkdt.sample.sso.core.ClasspathResourceRSAKey;
 import kkdt.sample.sso.core.IdentityBroker;
+import kkdt.sample.sso.core.JWECrypto;
+import kkdt.sample.sso.core.JWECrypto.Output;
 
 /**
  * Broker out where to obtain the id_token.
@@ -34,6 +40,7 @@ public class IDBroker implements IdentityBroker {
     
     private final ClasspathResourceRSAKey keyProvider;
     private final JWECrypto jweCrypto;
+    private final Map<String, UUID> activeSessions = Collections.synchronizedMap(new HashMap<>());
     
     /**
      * The default identity provider will the current server.
@@ -42,33 +49,20 @@ public class IDBroker implements IdentityBroker {
      */
     public IDBroker(ClasspathResourceRSAKey keyProvider) {
         this.keyProvider = keyProvider;
-        this.jweCrypto = new JWECrypto(keyProvider);
+        this.jweCrypto = new JWECrypto();
     }
     
-    @Override
-    public String generateIdToken(AuthenticationInfo authentication, String source)  throws Exception {
-        if(authentication == null || source == null) {
-            throw new IllegalStateException("Cannot generate an id_token, authentication is not valid");
-        }
-        
-        String token = null;
-        switch(source) {
-        case "jwe":
-            logger.info("Generating JWE token for authentication");
-            token = jweGenerateToken(authentication);
-            break;
-        default:
-            logger.info("Generating JWS token for authentication");
-            token = jwsGenerateToken(authentication);
-            break;
-        }
-        return token;
-    }
-    
-    private String jweGenerateToken(AuthenticationInfo authentication) throws Exception {
+    /**
+     * Encrypt a JWS.
+     * 
+     * @param userId
+     * @return
+     * @throws Exception
+     */
+    private String jweGenerateToken(String userId) throws Exception {
         // generate the jws as the payload
-        String jws = jwsGenerateToken(authentication);
-        return jweCrypto.encrypt(jws);
+        String jws = jwsGenerateToken(userId);
+        return jweCrypto.encrypt(jws, keyProvider.getPublicKey());
     }
     
     /**
@@ -77,7 +71,7 @@ public class IDBroker implements IdentityBroker {
      * @param authentication
      * @return
      */
-    private String jwsGenerateToken(AuthenticationInfo authentication)  throws Exception {
+    private String jwsGenerateToken(String userId)  throws Exception {
         Date now = new Date();
         Calendar exp = Calendar.getInstance();
         exp.setTime(now);
@@ -85,9 +79,9 @@ public class IDBroker implements IdentityBroker {
         
         // claims for the identity
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-            .subject(authentication.getUserId())
+            .subject(userId)
             .expirationTime(exp.getTime())
-            .audience(ID + authentication.getUserId())
+            .audience(ID + userId)
             .issueTime(now)
             .issuer(ID)
             .build();
@@ -107,6 +101,48 @@ public class IDBroker implements IdentityBroker {
         }
         
         return signedJWT.serialize();
+    }
+    
+    private String defaultIdToken(String userId, Output o) throws Exception {
+        String token = "";
+        switch(o) {
+        case Signed:
+            logger.info("Generating JWS token for authentication");
+            token = jwsGenerateToken(userId);
+            break;
+        case Encrypted:
+            logger.info("Generating JWE token for authentication");
+            token = jweGenerateToken(userId);
+            break;
+        }
+        return token;
+    }
+
+    @Override
+    public String idToken(String userId, String source, Output o) throws Exception {
+        if(userId == null || source == null || o == null) {
+            throw new IllegalStateException("Cannot generate an id_token, not enough information");
+        }
+        
+        String token = null;
+        switch(source) {
+        default:
+            token = defaultIdToken(userId, o);
+            break;
+        }
+        return token;
+    }
+    
+    @Override
+    public String idToken(String userId, Output o) throws Exception {
+        return idToken(userId, "", o);
+    }
+
+    @Override
+    public String session(String userId) {
+        UUID session = activeSessions.getOrDefault(userId, UUID.randomUUID());
+        activeSessions.put(userId, session);
+        return session.toString();
     }
 
 }

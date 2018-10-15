@@ -12,5 +12,5 @@ mainClassName = "kkdt.sample.sso.console.Console"
 applicationDefaultJvmArgs = ["-Xdebug","-Xrunjdwp:server=y,transport=dt_socket,address=4001,suspend=n"]
 
 dependencies {
-    compile project(':core')
+    compile project(':core-security')
 }

@@ -3,7 +3,7 @@
  * This file is part of 'sample-sso' which is released under the MIT license.
  * See LICENSE at the project root directory.
  */
-package kkdt.sample.sso.core.security.jwt;
+package kddt.sample.sso.core.security.jwt;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -17,7 +17,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.nimbusds.jwt.SignedJWT;
 
-import kkdt.sample.sso.core.security.AuthInfoSecured;
+import kddt.sample.sso.core.security.AuthInfoSecured;
+import kkdt.sample.sso.core.ClasspathResourceJWSVerifier;
+import kkdt.sample.sso.core.ClasspathResourceRSAKey;
+import kkdt.sample.sso.core.JWECrypto;
 
 /**
  * Authenticate a JWE token.
@@ -29,13 +32,23 @@ public class JWEAuthenticationProvider implements AuthenticationProvider {
     private static final Logger logger = Logger.getLogger(JWEAuthenticationProvider.class);
     
     private final JWECrypto jweCrypto;
+    private ClasspathResourceRSAKey rsaKey;
     
     public JWEAuthenticationProvider(JWECrypto jweCrypto) {
         this.jweCrypto = jweCrypto;
+        try {
+            this.rsaKey = new ClasspathResourceRSAKey("server.p12", "server", "changeit");
+        } catch (Exception e) {
+            logger.error(e);
+        }
     }
     
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        if(rsaKey == null) {
+            throw new IllegalStateException("Cannot authenticate due to missing configuration");
+        }
+        
         Authentication authenticated = null;
         if(authentication != null) {
             JWEAuthenticationRequest _authentication = (JWEAuthenticationRequest)authentication;
@@ -45,7 +58,7 @@ public class JWEAuthenticationProvider implements AuthenticationProvider {
             
             boolean verified = false;
             try {
-                String decrypted = jweCrypto.decrypt(idToken);
+                String decrypted = jweCrypto.decrypt(idToken, rsaKey.getPrivateKey());
                 
                 // verify the signature
                 verified = new ClasspathResourceJWSVerifier("server.crt")

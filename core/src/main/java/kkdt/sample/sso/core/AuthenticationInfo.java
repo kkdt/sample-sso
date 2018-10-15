@@ -6,7 +6,6 @@
 package kkdt.sample.sso.core;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 /**
  * The authentication object returned by the authentication API.
@@ -22,12 +21,9 @@ public class AuthenticationInfo implements Serializable {
     private String email;
     private String idToken;
 
-    public AuthenticationInfo() {
-        this.session = UUID.randomUUID().toString();
-    }
+    public AuthenticationInfo() {}
     
     public AuthenticationInfo(String userId) {
-        this.session = UUID.randomUUID().toString();
         this.userId = userId;
         this.email = String.format("%s@email.com", userId);
     }

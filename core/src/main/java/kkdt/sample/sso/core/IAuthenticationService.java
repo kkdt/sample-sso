@@ -17,8 +17,12 @@ public interface IAuthenticationService {
      * 
      * @param userId
      * @param password
-     * @param identity provider name.
+     * @param output jws or jwe.
      * @return
      */
-    AuthenticationInfo authenticate(String userId, char[] password, String source);
+    AuthenticationInfo authenticate(String userId, char[] password, String output);
+    
+    String idToken(String request);
+    
+    String accessToken(String request);
 }

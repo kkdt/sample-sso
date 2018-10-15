@@ -3,7 +3,7 @@
  * This file is part of 'sample-sso' which is released under the MIT license.
  * See LICENSE at the project root directory.
  */
-package kkdt.sample.sso.core.security.jwt;
+package kkdt.sample.sso.core;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +19,7 @@ import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jwt.SignedJWT;
 
 /**
- * Read in a certifiate file from the classpath to verify signature - JOSE implemention.
+ * Read in a certificate file from the classpath to verify signature - JOSE implemention.
  * 
  * @author thinh ho
  *
@@ -27,11 +27,12 @@ import com.nimbusds.jwt.SignedJWT;
 public class ClasspathResourceJWSVerifier {
     
     private final RSASSAVerifier verifier;
+    private final X509Certificate certificate;
     
     public ClasspathResourceJWSVerifier(String classpathCertificate) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, CertificateException {
         try (InputStream is = ClasspathResourceRSAKey.class.getClassLoader().getResourceAsStream(classpathCertificate)) {
             CertificateFactory f = CertificateFactory.getInstance("X.509");
-            X509Certificate certificate = (X509Certificate)f.generateCertificate(is);
+            this.certificate = (X509Certificate)f.generateCertificate(is);
             PublicKey pk = certificate.getPublicKey();
             this.verifier = new RSASSAVerifier((RSAPublicKey)pk);
         }

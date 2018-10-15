@@ -4,15 +4,23 @@
  * See LICENSE at the project root directory.
  */
 
-description = 'Webapp: Juliet'
+description = 'Webapp: Juliet (IDBroker)'
 
 apply plugin: 'application'
 
 mainClassName = "kkdt.sample.sso.juliet.JulietApplication"
+applicationDefaultJvmArgs = ["-Xdebug","-Xrunjdwp:server=y,transport=dt_socket,address=4002,suspend=n"]
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-web:1.5.10.RELEASE") {
+    compile project(':core')
+    
+    compile("org.springframework.boot:spring-boot-starter-web:2.0.5.RELEASE") {
         exclude module : 'spring-boot-starter-logging'
+        /*
+         * Need to exclude this module because REST controllers will be used and
+         * cannot be combined with Spring MVC when using annotations.
+         */
+//        exclude module : 'spring-webmvc'
     }
 }
 

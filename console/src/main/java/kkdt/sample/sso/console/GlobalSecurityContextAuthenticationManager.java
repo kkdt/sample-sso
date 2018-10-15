@@ -65,6 +65,7 @@ public class GlobalSecurityContextAuthenticationManager
         case "jws":
             token = new JWSToken(username, "");
             break;
+        case "sso":
         case "jwe":
             token = new JWEToken(username, "");
             break;

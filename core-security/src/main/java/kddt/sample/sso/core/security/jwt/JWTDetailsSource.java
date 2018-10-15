@@ -3,11 +3,13 @@
  * This file is part of 'sample-sso' which is released under the MIT license.
  * See LICENSE at the project root directory.
  */
-package kkdt.sample.sso.core.security.jwt;
+package kddt.sample.sso.core.security.jwt;
 
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -38,6 +40,17 @@ public class JWTDetailsSource {
      */
     public static final Function<HttpServletRequest, JWEAuthenticationRequest> jweURL = r -> {
         String id = Optional.ofNullable(r.getParameter("token")).orElse("");
+        return new JWEAuthenticationRequest(id);
+    };
+    
+    public static final Function<HttpServletRequest, JWEAuthenticationRequest> jweCookie = r -> {
+        String id = "";
+        if(r.getCookies() != null) {
+            Optional<Cookie> found = Stream.of(r.getCookies())
+                .filter(c -> "juliet".equals(c.getName()))
+                .findFirst();
+            id = found.isPresent() ? found.get().getValue() : "";
+        }
         return new JWEAuthenticationRequest(id);
     };
 }

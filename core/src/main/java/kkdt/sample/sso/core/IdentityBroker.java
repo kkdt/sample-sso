@@ -5,6 +5,8 @@
  */
 package kkdt.sample.sso.core;
 
+import kkdt.sample.sso.core.JWECrypto.Output;
+
 /**
  * API for obtaining id_token from a designated identity provider. 
  * 
@@ -13,11 +15,32 @@ package kkdt.sample.sso.core;
  */
 public interface IdentityBroker {
     /**
-     * Generate an id_token from an authentication.
+     * Broker out id_token to another <code>source</code>.
      * 
-     * @param authentication
-     * @param source the identity provider identifier.
+     * @param userId
+     * @param source
+     * @param o
+     * @return
+     * @throws Exception
+     */
+    String idToken(String userId, String source, Output o) throws Exception ;
+    
+    /**
+     * Implementation can be an OpenID provider and generate their own tokens.
+     * 
+     * @param userId
+     * @param o
+     * @return
+     * @throws Exception
+     */
+    String idToken(String userId, Output o) throws Exception;
+    
+    /**
+     * Obtain or activate a session for the specified user - i.e. the user is
+     * logged fully authenticated and holds an active session.
+     * 
+     * @param userId
      * @return
      */
-    String generateIdToken(AuthenticationInfo authentication, String source)  throws Exception ;
+    String session(String userId);
 }

@@ -3,7 +3,7 @@
  * This file is part of 'sample-sso' which is released under the MIT license.
  * See LICENSE at the project root directory.
  */
-package kkdt.sample.sso.core.security.jwt;
+package kkdt.sample.sso.core;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -44,7 +44,7 @@ public class ClasspathResourceCryptoTest {
         verifier = new ClasspathResourceJWSVerifier("server.crt");
         assertNotNull(verifier);
         
-        jweCrypto = new JWECrypto(rsaKey);
+        jweCrypto = new JWECrypto();
         assertNotNull(jweCrypto);
     }
     
@@ -75,9 +75,9 @@ public class ClasspathResourceCryptoTest {
         assertTrue(verifier.verifyJWS(s));
         
         // test JWE
-        String jwe = jweCrypto.encrypt(s);
+        String jwe = jweCrypto.encrypt(s, rsaKey.getPublicKey());
         assertNotNull(jwe);
-        String jws = jweCrypto.decrypt(jwe);
+        String jws = jweCrypto.decrypt(jwe, rsaKey.getPrivateKey());
         assertNotNull(jws);
         assertTrue(verifier.verifyJWS(jws));
     }

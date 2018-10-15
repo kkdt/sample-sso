@@ -1,0 +1,27 @@
+/**
+ * Copyright (C) 2018 thinh ho
+ * This file is part of 'sample-sso' which is released under the MIT license.
+ * See LICENSE at the project root directory.
+ */
+
+description = 'sample-sso: Spring Security support'
+
+apply plugin: 'java-library'
+
+dependencies {
+    compile project(':core')
+    
+    compile("org.springframework.boot:spring-boot-starter-security:2.0.5.RELEASE") {
+        exclude module : 'spring-boot-starter-logging'
+    }
+    
+    compile("org.springframework.boot:spring-boot-starter-web:2.0.5.RELEASE") {
+        exclude module : 'spring-boot-starter-logging'
+    }
+    
+    compile 'org.springframework.security.oauth:spring-security-oauth2:2.0.3.RELEASE'
+    compile 'org.springframework.security:spring-security-jwt:1.0.9.RELEASE'
+    
+    // allows a nice default login form
+    compile 'org.springframework.security:spring-security-oauth2-client:5.1.0.RELEASE'
+}

@@ -12,7 +12,7 @@ mainClassName = "kkdt.sample.sso.romeo.RomeoApplication"
 applicationDefaultJvmArgs = ["-Xdebug","-Xrunjdwp:server=y,transport=dt_socket,address=4000,suspend=n"]
 
 dependencies {
-    compile project(':core')
+    compile project(':core-security')
 }
 
 /*

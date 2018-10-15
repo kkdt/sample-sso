@@ -3,7 +3,7 @@
  * This file is part of 'sample-sso' which is released under the MIT license.
  * See LICENSE at the project root directory.
  */
-package kkdt.sample.sso.core.security;
+package kddt.sample.sso.core.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,15 +17,14 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import kddt.sample.sso.core.security.jwt.JWEAuthenticationProcessingFilter;
+import kddt.sample.sso.core.security.jwt.JWEAuthenticationProvider;
+import kddt.sample.sso.core.security.jwt.JWSAuthenticationProcessingFilter;
+import kddt.sample.sso.core.security.jwt.JWSAuthenticationProvider;
+import kddt.sample.sso.core.security.jwt.JWTDetailsSource;
 import kkdt.sample.sso.core.AuthenticationServiceLocator;
 import kkdt.sample.sso.core.IAuthenticationService;
-import kkdt.sample.sso.core.security.jwt.ClasspathResourceRSAKey;
-import kkdt.sample.sso.core.security.jwt.JWEAuthenticationProcessingFilter;
-import kkdt.sample.sso.core.security.jwt.JWEAuthenticationProvider;
-import kkdt.sample.sso.core.security.jwt.JWECrypto;
-import kkdt.sample.sso.core.security.jwt.JWSAuthenticationProcessingFilter;
-import kkdt.sample.sso.core.security.jwt.JWSAuthenticationProvider;
-import kkdt.sample.sso.core.security.jwt.JWTDetailsSource;
+import kkdt.sample.sso.core.JWECrypto;
 
 /**
  * Configuration class that can be shared for any application that wants to hook
@@ -50,11 +49,6 @@ public class SecuredConfiguration extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
     
-//    @Bean
-//    public AuthenticationProvider authenticationProvider() {
-//        return new AuthenticationInfoProvider(authenticationService);
-//    }
-    
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         JWSAuthenticationProcessingFilter jwsFilter = 
@@ -63,13 +57,20 @@ public class SecuredConfiguration extends WebSecurityConfigurerAdapter {
         JWEAuthenticationProcessingFilter jweFilter = 
             new JWEAuthenticationProcessingFilter("/jwe", JWTDetailsSource.jweURL, authenticationManager());
         
+        JWEAuthenticationProcessingFilter ssoFilter = 
+            new JWEAuthenticationProcessingFilter("/sso", JWTDetailsSource.jweCookie, authenticationManager());
+        
         // https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#csrf
         
         http.exceptionHandling()
             .and()
                 .addFilterAfter(jwsFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(jweFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(ssoFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeRequests()
+                .antMatchers("/public")
+                .anonymous()
+            .and().authorizeRequests()
                 .antMatchers("/**")
                 .hasAnyAuthority("ADMIN", "JWS", "JWE")
             // authenticate all other requests
@@ -84,7 +85,7 @@ public class SecuredConfiguration extends WebSecurityConfigurerAdapter {
             .and()
                 .authenticationProvider(new AuthenticationInfoProvider(authenticationService))
                 .authenticationProvider(new JWSAuthenticationProvider())
-                .authenticationProvider(new JWEAuthenticationProvider(new JWECrypto(new ClasspathResourceRSAKey("server.p12", "server", "changeit"))));
+                .authenticationProvider(new JWEAuthenticationProvider(new JWECrypto()));
         
         // TODO: Spring Security and session management - Allow Spring Security to create sessions?
     }

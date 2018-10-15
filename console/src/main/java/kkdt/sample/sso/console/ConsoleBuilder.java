@@ -54,16 +54,19 @@ public class ConsoleBuilder {
         
         JRadioButton jws = new JRadioButton("jws");
         JRadioButton jwe = new JRadioButton("jwe");
+        JRadioButton sso = new JRadioButton("sso");
         
         ButtonGroup btnGroup = new ButtonGroup();
         btnGroup.add(jws);
         btnGroup.add(jwe);
+        btnGroup.add(sso);
         jws.setSelected(true); // default
         
         JPanel sources = new JPanel();
-        sources.setLayout(new BoxLayout(sources, BoxLayout.Y_AXIS));
+        sources.setLayout(new BoxLayout(sources, BoxLayout.X_AXIS));
         sources.add(jws);
         sources.add(jwe);
+        sources.add(sso);
         
         final JButton exitBtn = new JButton("Exit");
         final JButton actionBtn = new JButton("Login");
@@ -118,6 +121,10 @@ public class ConsoleBuilder {
                     boolean authenticated = event.getAuthentication().isAuthenticated();
                     SwingUtilities.invokeLater(() -> {
                         name.setEnabled(!authenticated);
+                        jwe.setEnabled(!authenticated);
+                        jws.setEnabled(!authenticated);
+                        sso.setEnabled(!authenticated);
+                        actionBtn.setText(authenticated ? "Logout" : "Login");
                         frame.pack();
                     });
                 })
@@ -126,6 +133,13 @@ public class ConsoleBuilder {
                     SecurityContext context = SecurityContextHolder.getContext();
                     if(event.getAuthentication() != null) {
                         actionBtn.setText("Logout");
+                        jwe.setEnabled(false);
+                        jws.setEnabled(false);
+                        sso.setEnabled(false);
+                        
+                        if(sso.isSelected()) {
+                            url.setText("https://localhost:8992/login?url=https://localhost:8991/sso&user=" + name.getText());
+                        }
                     }
                     logger.info("Event.authentication: " + event.getAuthentication());
                     logger.info("SecurityContext.getAuthentication: " + context.getAuthentication());

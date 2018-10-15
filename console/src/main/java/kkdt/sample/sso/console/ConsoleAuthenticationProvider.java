@@ -11,12 +11,11 @@ import java.util.stream.Stream;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 
+import kddt.sample.sso.core.security.AuthInfoSecured;
+import kddt.sample.sso.core.security.AuthenticationInfoProvider;
 import kkdt.sample.sso.core.AuthenticationInfo;
 import kkdt.sample.sso.core.IAuthenticationService;
-import kkdt.sample.sso.core.security.AuthInfoSecured;
-import kkdt.sample.sso.core.security.AuthenticationInfoProvider;
 
 /**
  * Specific to the console Spring Security configuration that will read in either
@@ -56,7 +55,7 @@ public class ConsoleAuthenticationProvider extends AuthenticationInfoProvider {
                 info.getIdToken(), 
                 Stream.of(new SimpleGrantedAuthority("ADMIN")).collect(Collectors.toList()));
         } else {
-            throw new UnauthorizedUserException("User is not valid");
+            throw new IllegalStateException("User is not valid");
         }
         return authenticated;
     }

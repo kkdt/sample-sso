@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import kkdt.sample.sso.core.AuthenticationInfo;
 import kkdt.sample.sso.core.IAuthenticationService;
 import kkdt.sample.sso.core.IdentityBroker;
+import kkdt.sample.sso.core.JWECrypto.Output;
 
 /**
  * Only recognize a single user identifier - implementation is an RMI interface.
@@ -31,21 +32,39 @@ public class AuthenticationService implements IAuthenticationService, Remote {
     }
     
     @Override
-    public AuthenticationInfo authenticate(String userId, char[] password, String source) {
+    public AuthenticationInfo authenticate(String userId, char[] password, String output) {
         AuthenticationInfo auth = new AuthenticationInfo(userId);
         if(!validUser.equals(userId)) {
             logger.warn("Authenticating " + userId + " is not valid");
-            auth.setSession(null);
         } else {
             String idToken = null;
+            String session = null;
             try {
-                idToken = identityBroker.generateIdToken(auth, source);
-                logger.info(String.format("Generated IDToken from %s: %s", source, idToken));
+                idToken = identityBroker.idToken(auth.getUserId(), 
+                    "jws".equals(output) ? Output.Signed : Output.Encrypted);
+                logger.info(String.format("Generated IDToken: %s", idToken));
+                session = identityBroker.session(auth.getUserId());
+                logger.info(String.format("Generated Session: %s", session));
             } catch (Exception e) {
                 logger.error("Cannot generate id_token", e);
             } 
             auth.setIdToken(idToken);
+            auth.setSession(session);
         }
         return auth;
+    }
+
+    @Override
+    public String idToken(String request) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String accessToken(String request) {
+        
+        
+        // TODO Auto-generated method stub
+        return null;
     }
 }
