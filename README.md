@@ -1,8 +1,32 @@
 # Overview
 
-The goal for this project is to explore single sign-on where an existing desktop/thick client application (`console`) authenticates users via a 1st-part relationship with a couple of backend services but also performs single sing-on to external web applications when launching a browser from `console`. The external webapp in this project is `romeo`; `console` and `juliet` are 1st-part applications; and the `authServer` provides common authentication and OpenID token retrieval via RMI interfaces for all applications.
+The goal for this project is to explore single sign-on between two applications - a thick client (`console`) and a web application (`romeo`). The end goal would be to have the end-user authenticate via the thick client and its backend; click a button that points to the webapp and be fully authenticated.
 
-The crypto is RSA with all services sharing the same keystore; however, this can be extended to each server having their own keystore so long as there is a way to retrieve each server's public key. Crypto is doing a decryption and checking signature but in a production environment, the recipient should also verify the claims in the JWT appropriately.
+## Assumptions
+
+1. Both applications are in a closed environment
+2. There is PKI implemented within the environment; each server containing signed server certificates; common CA
+3. Both application authenticate its users via a common authentication service
+4. Both applications has access to the other public certificate
+5. Crypto is RSA
+
+## Scenario Description
+
+Common Services
+
+- Authentication Service (RMI interface), `authServer`
+- Identity Broker (RMI interface), `authServer`
+
+> For the purpose of prototyping, these interfaces are exposed and started in the same module.
+
+Application 1
+
+- Console, `console`
+- Juliet/Identity Provider (https/webapp), `juliet`
+
+Application 2
+
+- Romeo (https/webapp), `romeo`
 
 # Modules
 
@@ -35,8 +59,8 @@ Whenever a username and password is asked, the only valid user is `admin`; any p
 3. Launch `romeo` by pasting the token to the URL text area and click 'Launch' (the text area is for demonstration purposes only)
 
 ```
-Endpoint - https://localhost:8991/jws?token=<token>
-Endpoint - https://localhost:8991/jwe?token=<token>
+Romeo Endpoint - https://localhost:8991/jws?token=<token>
+Romeo Endpoint - https://localhost:8991/jwe?token=<token>
 ```
 
 The problem - in both the JWS and JWE situation, data is transfered via URL parameters which can be intercepted. For example, just copy and paste the URL in a separate browser.
@@ -45,11 +69,20 @@ The problem - in both the JWS and JWE situation, data is transfered via URL para
 
 1. Log into Console by choosing 'sso'
 2. DO NOT modify the URL text area
-3. Note that URL is pointing to `juliet` - the internal webapp
+3. Note that URL is pointing to `juliet` - the internal webapp/proxy
 4. Launch `romeo` by clicking 'Launch'
 
 ```
-Endpoint - https://localhost:8992/login?url=http://localhost:8991?sso&user=admin
+Juliet Endpoint - https://localhost:8992/login?url=http://localhost:8991/sso&user=admin
 ```
 
-In this scenario, Juliet is an internal webapp with Console and is the proxy for redirecting the browser to an endpoint in Romeo that expects an encrypted cookie from an external source. This cookie will be used to authenticate the user who launched the browser from the desktop application. The cookie is generated, encrypted, and signed via Juliet and is sent with the redirect.
+> The URL is simple for the purpose of prototyping. For example, the redirect URL could be stored and not exposed in the URL.
+
+In this scenario, suppose Juliet is an *internal* (closed to the outside world) webapp and is the proxy for redirecting the browser to an endpoint. The redirect goes to Romeo and expects an encrypted cookie from an external source. This cookie is the id_token and will be used to authenticate the user. The cookie is generated, encrypted, and signed via Juliet and is sent with the redirect. Furthermore, the request is over SSL and is encrypted on transport. 
+
+Because Juliet is an internal 1st-party webapp and also an identity provider, the assumption here is that it has an implicit flow for obtaining ID tokens which is provided directly with the redirection response. Another assumption is that the Console has to run on the same server as Juliet so a remote display flow for starting up the Console.
+
+# Questions
+
+1. Delete cookie on log out
+2. Browser launched from server vs. end user workstation

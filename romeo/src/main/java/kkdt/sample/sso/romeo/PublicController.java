@@ -5,6 +5,7 @@
  */
 package kkdt.sample.sso.romeo;
 
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +22,17 @@ public class PublicController {
     @RequestMapping(path="/public", produces="application/json")
     public Map<Integer, Map<String, Object>> pub(HttpServletRequest request, HttpServletResponse response) {
         Map<Integer, Map<String, Object>> ret = new HashMap<>();
+        
+        // header
+        Map<String, Object> header = new HashMap<>();
+        Enumeration<String> h = request.getHeaderNames();
+        while(h.hasMoreElements()) {
+            String name = h.nextElement();
+            header.put(name, request.getHeader(name));
+        }
+        ret.put(-1, header);
+        
+        // cookie
         if(request.getCookies() != null) {
             for(int i = 0; i < request.getCookies().length; i++) {
                 Cookie c = request.getCookies()[i];

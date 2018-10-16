@@ -100,6 +100,8 @@ public class IdentityController {
         String value = identityBroker.idToken("juliet", Output.Encrypted);
         Cookie cookie = generateEncryptedCookie(value);
         response.addCookie(cookie);
+        // modifying header to see whether or not the header is persisted on the redirect
+        response.setHeader("HelloWorld", value);
         response.sendRedirect(destination);
     }
     
