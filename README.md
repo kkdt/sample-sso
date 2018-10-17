@@ -78,11 +78,14 @@ Juliet Endpoint - https://localhost:8992/login?url=http://localhost:8991/sso&use
 
 > The URL is simple for the purpose of prototyping. For example, the redirect URL could be stored and not exposed in the URL.
 
-In this scenario, suppose Juliet is an *internal* (closed to the outside world) webapp and is the proxy for redirecting the browser to an endpoint. The redirect goes to Romeo and expects an encrypted cookie from an external source. This cookie is the id_token and will be used to authenticate the user. The cookie is generated, encrypted, and signed via Juliet and is sent with the redirect. Furthermore, the request is over SSL and is encrypted on transport. 
+In this scenario, suppose Juliet is an *internal* (closed to the outside world) webapp and is the proxy for redirecting the browser to an endpoint. The redirect goes to Romeo and expects an encrypted session cookie from an external source. This cookie is the id_token and will be used to authenticate the user. The cookie is generated, encrypted, and signed via Juliet and is sent with the redirect. Furthermore, the request is over SSL and is encrypted on transport. 
 
 Because Juliet is an internal 1st-party webapp and also an identity provider, the assumption here is that it has an implicit flow for obtaining ID tokens which is provided directly with the redirection response. Another assumption is that the Console has to run on the same server as Juliet so a remote display flow for starting up the Console.
 
-# Questions
+# Considerations
 
 1. Delete cookie on log out
-2. Browser launched from server vs. end user workstation
+2. Session fixation attack
+3. Console installed/running on an external workstation
+4. Similar to 3, browser running via remote display off the server or the end user workstation
+5. Embedding Juliet with each Console session 
