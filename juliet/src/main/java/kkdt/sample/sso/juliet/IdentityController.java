@@ -64,7 +64,7 @@ public class IdentityController {
          * (XSS) attacks.
          */
         cookie.setHttpOnly(true);
-        cookie.setPath("/sso");
+        cookie.setPath("/");
         cookie.setVersion(1);
         return cookie;
     }

@@ -9,6 +9,7 @@ The goal for this project is to explore single sign-on between two applications 
 3. Both application authenticate its users via a common authentication service
 4. Both applications has access to the other public certificate
 5. Crypto is RSA
+6. This project ignores validating JWT claims; RSA crypto and signature validation is enough for the purpose of prototyping
 
 ## Scenario Description
 
@@ -89,3 +90,4 @@ Because Juliet is an internal 1st-party webapp and also an identity provider, th
 3. Console installed/running on an external workstation
 4. Similar to 3, browser running via remote display off the server or the end user workstation
 5. Embedding Juliet with each Console session 
+6. Replay attack - i.e. all URL parameters can be delayed/intercepted and replayed
